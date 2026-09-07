@@ -1,0 +1,265 @@
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MSc AIML | Christ (Deemed to be University)</title>
+    <style>
+        :root {
+            --primary-blue: #003366;    
+            --secondary-blue: #00509E;
+            --light-blue: #E6F0FA; 
+            --accent-blue: #4DA6FF;
+            --white: #FFFFFF;
+            --text-dark: #333333;
+        }
+
+
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--light-blue);
+            color: var(--text-dark);
+            padding-top: 140px; 
+        }
+
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-top {
+            background-color: var(--primary-blue);
+            color: var(--white);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 50px;
+        }
+
+        .header-top h1 {
+            margin: 0;
+            font-size: 28px;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        .header-top img {
+            height: 60px;
+            width: auto;
+            border-radius: 4px;
+            background-color: var(--white); 
+            padding: 2px;
+        }
+
+        nav {
+            background-color: var(--secondary-blue);
+            display: flex;
+            justify-content: center;
+            padding: 12px 0;
+            gap: 40px;
+        }
+
+        nav a {
+            color: var(--white);
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: color 0.3s ease, border-bottom 0.3s ease;
+            border-bottom: 2px solid transparent;
+            padding-bottom: 3px;
+        }
+
+        nav a:hover {
+            color: var(--accent-blue);
+            border-bottom: 2px solid var(--accent-blue);
+        }
+        section {
+            padding: 80px 10%;
+            min-height: 60vh;
+        }
+
+        #about { background-color: var(--white); }
+        #faculties { background-color: var(--light-blue); }
+        #contact { background-color: var(--white); }
+
+        section h2 {
+            color: var(--primary-blue);
+            font-size: 32px;
+            border-bottom: 3px solid var(--accent-blue);
+            display: inline-block;
+            padding-bottom: 10px;
+            margin-bottom: 40px;
+        }
+
+        section p {
+            line-height: 1.8;
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+
+        .faculty-container {
+            display: flex;
+            justify-content: space-between;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+
+        .faculty-card {
+            background-color: var(--white);
+            border-top: 5px solid var(--secondary-blue);
+            border-radius: 8px;
+            padding: 30px 20px;
+            width: 28%;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .faculty-card:hover {
+            transform: translateY(-10px);
+        }
+
+        .faculty-card h3 {
+            color: var(--primary-blue);
+            margin-top: 0;
+            font-size: 22px;
+            margin-bottom: 10px;
+        }
+
+        .designation {
+            font-weight: bold;
+            color: var(--secondary-blue);
+            font-size: 16px;
+            margin-bottom: 15px;
+        }
+
+        .subject {
+            background-color: var(--light-blue);
+            padding: 8px 15px;
+            border-radius: 20px;
+            display: inline-block;
+            font-size: 14px;
+            color: var(--primary-blue);
+            font-weight: 600;
+        }
+        .contact-wrapper {
+            background-color: var(--primary-blue);
+            color: var(--white);
+            padding: 40px;
+            border-radius: 10px;
+            text-align: center;
+            max-width: 600px;
+            margin: 0 auto;
+            box-shadow: 0 10px 20px rgba(0, 51, 102, 0.2);
+        }
+
+        .contact-wrapper h3 {
+            margin-top: 0;
+            font-size: 24px;
+            color: var(--accent-blue);
+        }
+
+        .contact-wrapper p {
+            margin: 10px 0;
+            font-size: 16px;
+        }
+
+        footer {
+            background-color: var(--primary-blue);
+            color: var(--white);
+            text-align: center;
+            padding: 20px;
+            font-size: 14px;
+            border-top: 1px solid var(--secondary-blue);
+        }
+
+        @media (max-width: 900px) {
+            .faculty-card { width: 100%; margin-bottom: 20px; }
+            .header-top { flex-direction: column; text-align: center; gap: 15px; }
+            nav { flex-wrap: wrap; gap: 20px; }
+            body { padding-top: 180px; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-top">
+            <h1>CHRIST (Deemed to be University)</h1>
+            <img src="logo.png" alt="Christ University Logo">
+        </div>
+        
+        <nav>
+            <a href="#about">About Us</a>
+            <a href="#faculties">Faculties of MSc AIML</a>
+            <a href="#contact">Contact Us</a>
+        </nav>
+    </header>
+
+    <section id="about">
+        <h2>About Us</h2>
+        <p><strong>CHRIST (Deemed to be University)</strong> is born out of the educational vision of St Kuriakose Elias Chavara, an educationalist and social reformer of the nineteenth century in South India. The University is committed to providing world-class education, emphasizing academic excellence and holistic development.</p>
+        
+        <p>The <strong>MSc in Artificial Intelligence and Machine Learning (AIML)</strong> is a cutting-edge program designed to equip students with deep theoretical and practical knowledge in the fields of AI, Deep Learning, Data Science, and Cognitive Computing. Our curriculum is tailored to bridge the gap between academic research and industry demands, fostering innovators and technology leaders for the future.</p>
+    </section>
+
+       <section id="faculties">
+        <h2>Faculties of MSc AIML</h2>
+        <div class="faculty-container">
+           
+            <div class="faculty-card">
+                <h3>Dr Rupali Sunil Wagh</h3>
+                <div class="designation">Professor & Head of Department</div>
+                <p>Qualification : MSc, MPhil, PhD</p>
+                <div class="subject">Specialization : Computer Science </div>
+            </div>
+
+
+            <div class="faculty-card">
+                <h3>Dr VIJAY ARPUTHARAJ J </h3>
+                <div class="designation">Assistant Professor</div>
+                <p>Qualification : MSc, PhD</p>
+                <div class="subject">Specialization : Computer Science</div>
+            </div>
+
+
+            <div class="faculty-card">
+                <h3>Dr NISHA VARGHESE </h3>
+                <div class="designation">Assistant Professor</div>
+                <p>Qualification : MSc, MPhil, PhD</p>
+                <div class="subject">Specialization : Computer Science</div>
+            </div>
+
+
+        </div>
+    </section>
+
+
+    <section id="contact">
+        <h2>Contact Us</h2>
+        <div class="contact-wrapper">
+            <h3>Department of Data Science (MSc AIML)</h3>
+            <p><strong>Address:</strong> CHRIST (Deemed to be University)<br>
+               Hosur Road, Bengaluru, Karnataka, India - 560029</p>
+            <p><strong>Phone:</strong> +91 80 4012 9100 / 9600</p>
+            <p><strong>Email:</strong> admissions@christuniversity.in</p>
+            <p><strong>Working Hours:</strong> Mon - Sat: 9:00 AM to 4:00 PM</p>
+        </div>
+    </section>
+
+    <footer>
+        &copy; 2026 CHRIST (Deemed to be University) - CUCS Department. All Rights Reserved.
+    </footer>
+
+</body>
+</html>
