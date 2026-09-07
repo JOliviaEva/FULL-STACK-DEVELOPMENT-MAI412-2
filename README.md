@@ -31,4 +31,4 @@ A structured repository containing all lab assignments and projects completed fo
 * Built and tested simple RESTful services connecting an Express.js server to a MongoDB database.
 
 ---
-*Author: Olivia Evangeline John | BCA, CHRIST (Deemed to be University)*
+*Author: Olivia Evangeline John | MSc AI & ML, CHRIST (Deemed to be University)*
