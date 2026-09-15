@@ -1,0 +1,352 @@
+<html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Lab 01 — CHRIST University ERP | Olivia's Full Stack Development Lab</title>
+<meta name="description" content="Lab 1: Responsive webpage layout built with Tailwind CSS — a CHRIST (Deemed to be University) ERP Management System." />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,500;0,8..60,600;0,8..60,700;1,8..60,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+  rel="stylesheet"
+/>
+
+<!-- Tailwind CSS (CDN build) + Typography plugin -->
+<script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          plum: { 50: "#F6EEF3", 100: "#EBDBE6", 200: "#D3AFC5", 300: "#B983A4", 400: "#8E4C77", 500: "#601D49", 600: "#4C173A", 700: "#39112B", 800: "#270B1D" },
+          rose: { 50: "#FBEFF3", 100: "#F5D9E2", 200: "#EAB2C3", 300: "#DE8CA6", 500: "#BD5579", 600: "#9A4062", 700: "#732F49" },
+          teal: { 50: "#EAF6F9", 100: "#CEEAF1", 200: "#9DD5E3", 300: "#6CBFD5", 500: "#218DAE", 600: "#1A7089", 700: "#145465", 800: "#0D3841" },
+          paper: { DEFAULT: "#F6F0E4", light: "#FBF7EF", dark: "#ECE3D0", line: "#DED2B8" },
+          ink: { DEFAULT: "#2B1B22", soft: "#5A4650", faint: "#8A7A82" },
+        },
+        fontFamily: {
+          serif: ["'Source Serif 4'", "Georgia", "serif"],
+          mono: ["'IBM Plex Mono'", "ui-monospace", "monospace"],
+        },
+        boxShadow: {
+          paper: "0 1px 2px rgba(43,27,34,0.06), 0 8px 24px -8px rgba(43,27,34,0.18)",
+          card: "0 1px 3px rgba(43,27,34,0.08), 0 10px 30px -12px rgba(96,29,73,0.25)",
+        },
+      },
+    },
+  };
+</script>
+
+<style>
+  body {
+    background-color: #f6f0e4;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+    font-family: "Source Serif 4", Georgia, serif;
+  }
+  .paper-card {
+    background-color: #fbf7ef;
+    border: 1px solid rgba(222, 210, 184, 0.8);
+    box-shadow: 0 1px 2px rgba(43, 27, 34, 0.06), 0 8px 24px -8px rgba(43, 27, 34, 0.18);
+    border-radius: 3px;
+  }
+  #mobileNav {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+  }
+  #mobileNav[data-open="true"] {
+    max-height: 20rem;
+  }
+</style>
+</head>
+
+<body class="text-ink antialiased">
+
+  <header class="bg-plum-500 text-paper-light">
+    <div class="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-5 py-4 sm:px-7">
+      <div class="flex items-center gap-4">
+        <span class="flex h-16 w-28 shrink-0 items-center justify-center rounded-sm bg-white px-2 py-1.5 shadow-paper sm:h-20 sm:w-36">
+          <img src="/christ-university-logo.png" alt="CHRIST (Deemed to be University) logo" class="h-full w-full object-contain" />
+        </span>
+        <div>
+          <p class="font-serif text-lg font-semibold leading-tight sm:text-xl">CHRIST (Deemed to be University)</p>
+          <p class="font-mono text-[10px] uppercase tracking-[0.12em] text-rose-200/90 sm:text-[11px]">
+            Empowering Minds, Inspiring Futures
+          </p>
+        </div>
+      </div>
+      <span class="rounded-full border border-teal-300/40 bg-teal-500/15 px-3 py-1 font-mono text-[10px] uppercase tracking-[0.1em] text-teal-200">
+        HTML &amp; Tailwind CSS
+      </span>
+    </div>
+  </header>
+
+  <nav class="relative border-b border-plum-700/20 bg-[#fbf7ef]">
+    <div class="mx-auto flex max-w-6xl items-center justify-between px-5 py-2.5 sm:px-7">
+      <button
+        id="navToggle"
+        type="button"
+        aria-expanded="false"
+        aria-controls="mobileNav"
+        class="flex items-center gap-2 rounded-sm border border-plum-500/20 px-3 py-1.5 font-mono text-[11px] uppercase tracking-[0.1em] text-plum-500 md:hidden"
+      >
+        <svg id="iconMenu" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
+        <svg id="iconClose" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="hidden"><path stroke-linecap="round" d="M6 6l12 12M18 6L6 18"/></svg>
+        Menu
+      </button>
+
+      <ul class="hidden items-center gap-1 md:flex">
+        <li><a href="#dashboard" class="nav-link rounded-sm px-3 py-1.5 font-mono text-[11.5px] uppercase tracking-[0.06em] bg-plum-500 text-white">Dashboard</a></li>
+        <li><a href="#students" class="nav-link rounded-sm px-3 py-1.5 font-mono text-[11.5px] uppercase tracking-[0.06em] text-ink-soft hover:bg-plum-50 hover:text-plum-500">Students</a></li>
+        <li><a href="#faculty" class="nav-link rounded-sm px-3 py-1.5 font-mono text-[11.5px] uppercase tracking-[0.06em] text-ink-soft hover:bg-plum-50 hover:text-plum-500">Faculty</a></li>
+        <li><a href="#courses" class="nav-link rounded-sm px-3 py-1.5 font-mono text-[11.5px] uppercase tracking-[0.06em] text-ink-soft hover:bg-plum-50 hover:text-plum-500">Courses</a></li>
+        <li><a href="#performance" class="nav-link rounded-sm px-3 py-1.5 font-mono text-[11.5px] uppercase tracking-[0.06em] text-ink-soft hover:bg-plum-50 hover:text-plum-500">Academic Performance</a></li>
+        <li><a href="#ai-insights" class="nav-link rounded-sm px-3 py-1.5 font-mono text-[11.5px] uppercase tracking-[0.06em] text-ink-soft hover:bg-plum-50 hover:text-plum-500">Highlights</a></li>
+      </ul>
+
+      <span class="hidden font-mono text-[10px] uppercase tracking-[0.1em] text-ink-faint sm:inline">Student ERP Portal</span>
+    </div>
+
+    <div id="mobileNav" data-open="false" class="border-t border-plum-500/10 bg-[#fbf7ef] md:hidden">
+      <ul class="divide-y divide-paper-line px-5">
+        <li><a href="#dashboard" class="block py-2.5 font-mono text-[12px] uppercase tracking-[0.08em] text-plum-500">Dashboard</a></li>
+        <li><a href="#students" class="block py-2.5 font-mono text-[12px] uppercase tracking-[0.08em] text-ink-soft">Students</a></li>
+        <li><a href="#faculty" class="block py-2.5 font-mono text-[12px] uppercase tracking-[0.08em] text-ink-soft">Faculty</a></li>
+        <li><a href="#courses" class="block py-2.5 font-mono text-[12px] uppercase tracking-[0.08em] text-ink-soft">Courses</a></li>
+        <li><a href="#performance" class="block py-2.5 font-mono text-[12px] uppercase tracking-[0.08em] text-ink-soft">Academic Performance</a></li>
+        <li><a href="#ai-insights" class="block py-2.5 font-mono text-[12px] uppercase tracking-[0.08em] text-ink-soft">Highlights</a></li>
+      </ul>
+    </div>
+  </nav>
+  <main class="bg-[#fbf7ef]">
+
+    <section id="dashboard" class="mx-auto max-w-6xl px-5 py-10 sm:px-7">
+      <h2 class="font-serif text-2xl font-semibold text-plum-500 sm:text-[1.75rem]">Welcome to CHRIST University ERP</h2>
+      <p class="mt-2 max-w-2xl text-ink-soft">
+        A management platform for CHRIST (Deemed to be University) — organizing academic information,
+        student records and campus insights across its schools and campuses.
+      </p>
+
+      <div class="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+
+        <div class="paper-card flex items-center gap-4 p-5">
+          <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-plum-500/20 text-plum-500">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          </span>
+          <div>
+            <p class="font-serif text-2xl font-semibold text-ink">38,000+</p>
+            <p class="font-mono text-[10.5px] uppercase tracking-[0.1em] text-ink-faint">Total Students</p>
+          </div>
+        </div>
+
+        <div class="paper-card flex items-center gap-4 p-5">
+          <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-rose-500/20 text-rose-600">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5-10-5Z"/><path d="M6 12v5c0 1.66 2.69 3 6 3s6-1.34 6-3v-5"/></svg>
+          </span>
+          <div>
+            <p class="font-serif text-2xl font-semibold text-ink">10</p>
+            <p class="font-mono text-[10.5px] uppercase tracking-[0.1em] text-ink-faint">Schools</p>
+          </div>
+        </div>
+
+        <div class="paper-card flex items-center gap-4 p-5">
+          <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-teal-500/20 text-teal-600">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/></svg>
+          </span>
+          <div>
+            <p class="font-serif text-2xl font-semibold text-ink">250+</p>
+            <p class="font-mono text-[10.5px] uppercase tracking-[0.1em] text-ink-faint">Programmes Offered</p>
+          </div>
+        </div>
+
+        <div class="paper-card flex items-center gap-4 p-5">
+          <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-plum-500/20 text-plum-500">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10Z"/></svg>
+          </span>
+          <div>
+            <p class="font-serif text-2xl font-semibold text-ink">520+</p>
+            <p class="font-mono text-[10.5px] uppercase tracking-[0.1em] text-ink-faint">International Students</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="students" class="border-t border-paper-line bg-[#f6f0e4] px-5 py-14 sm:px-7">
+      <div class="mx-auto max-w-6xl">
+        <div class="mb-6 flex items-center justify-between">
+          <h3 class="font-serif text-xl font-semibold text-plum-500">Students</h3>
+          <span class="rounded-full border border-ink-faint/30 px-2.5 py-0.5 font-mono text-[10px] uppercase tracking-[0.1em] text-ink-faint">Source: christuniversity.in</span>
+        </div>
+        <div class="grid grid-cols-1 gap-5 sm:grid-cols-3">
+          <div class="paper-card p-5">
+            <p class="font-serif text-2xl font-semibold text-ink">38,000+</p>
+            <p class="mt-1 font-mono text-[10.5px] uppercase tracking-[0.1em] text-teal-600">Total Enrollment</p>
+            <p class="mt-2 text-[0.9rem] leading-relaxed text-ink-soft">Students enrolled across all undergraduate, postgraduate and doctoral programmes.</p>
+          </div>
+          <div class="paper-card p-5">
+            <p class="font-serif text-2xl font-semibold text-ink">520+</p>
+            <p class="mt-1 font-mono text-[10.5px] uppercase tracking-[0.1em] text-teal-600">International Students</p>
+            <p class="mt-2 text-[0.9rem] leading-relaxed text-ink-soft">Representing 38+ countries across the university's campuses.</p>
+          </div>
+          <div class="paper-card p-5">
+            <p class="font-serif text-2xl font-semibold text-ink">90,000+</p>
+            <p class="mt-1 font-mono text-[10.5px] uppercase tracking-[0.1em] text-teal-600">Alumni Network</p>
+            <p class="mt-2 text-[0.9rem] leading-relaxed text-ink-soft">Graduates worldwide, with a 95% placement rate for recent cohorts.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="faculty" class="border-t border-paper-line px-5 py-14 sm:px-7">
+      <div class="mx-auto max-w-6xl">
+        <h3 class="font-serif text-xl font-semibold text-plum-500">Faculties &amp; Schools</h3>
+        <p class="mt-1 text-[0.9rem] text-ink-faint">The 10 schools that make up CHRIST (Deemed to be University).</p>
+        <div class="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-5">
+          <div class="paper-card p-4 text-center text-[0.85rem] font-medium text-ink-soft">Business &amp; Management</div>
+          <div class="paper-card p-4 text-center text-[0.85rem] font-medium text-ink-soft">Commerce &amp; Finance</div>
+          <div class="paper-card p-4 text-center text-[0.85rem] font-medium text-ink-soft">Engineering &amp; Technology</div>
+          <div class="paper-card p-4 text-center text-[0.85rem] font-medium text-ink-soft">Sciences</div>
+          <div class="paper-card p-4 text-center text-[0.85rem] font-medium text-ink-soft">Social Sciences</div>
+          <div class="paper-card p-4 text-center text-[0.85rem] font-medium text-ink-soft">Law</div>
+          <div class="paper-card p-4 text-center text-[0.85rem] font-medium text-ink-soft">Education</div>
+          <div class="paper-card p-4 text-center text-[0.85rem] font-medium text-ink-soft">Architecture</div>
+          <div class="paper-card p-4 text-center text-[0.85rem] font-medium text-ink-soft">Humanities &amp; Performing Arts</div>
+          <div class="paper-card p-4 text-center text-[0.85rem] font-medium text-ink-soft">Psychological Sciences</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="courses" class="border-t border-paper-line bg-[#f6f0e4] px-5 py-14 sm:px-7">
+      <div class="mx-auto max-w-6xl">
+        <h3 class="font-serif text-xl font-semibold text-plum-500">Courses &amp; Programmes</h3>
+        <p class="mt-1 text-[0.9rem] text-ink-faint">250+ programmes offered across four levels of study.</p>
+        <div class="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4">
+          <div class="paper-card p-5">
+            <p class="font-serif text-2xl font-semibold text-ink">92</p>
+            <p class="mt-1 font-mono text-[10.5px] uppercase tracking-[0.1em] text-ink-faint">Undergraduate</p>
+          </div>
+          <div class="paper-card p-5">
+            <p class="font-serif text-2xl font-semibold text-ink">77</p>
+            <p class="mt-1 font-mono text-[10.5px] uppercase tracking-[0.1em] text-ink-faint">Postgraduate</p>
+          </div>
+          <div class="paper-card p-5">
+            <p class="font-serif text-2xl font-semibold text-ink">36</p>
+            <p class="mt-1 font-mono text-[10.5px] uppercase tracking-[0.1em] text-ink-faint">Doctoral (PhD)</p>
+          </div>
+          <div class="paper-card p-5">
+            <p class="font-serif text-2xl font-semibold text-ink">9</p>
+            <p class="mt-1 font-mono text-[10.5px] uppercase tracking-[0.1em] text-ink-faint">Online Programmes</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="performance" class="border-t border-paper-line px-5 py-14 sm:px-7">
+      <div class="mx-auto max-w-6xl">
+        <h3 class="font-serif text-xl font-semibold text-plum-500">Academic Performance</h3>
+        <p class="mt-1 text-[0.9rem] text-ink-faint">Campus footprint and graduate outcomes.</p>
+        <div class="mt-6 grid grid-cols-1 gap-5 md:grid-cols-2">
+          <div class="paper-card p-5">
+            <p class="font-mono text-[10.5px] uppercase tracking-[0.1em] text-teal-600">Campuses</p>
+            <p class="mt-2 text-[0.95rem] leading-relaxed text-ink-soft">Six campuses across Bangalore (Central, Kengeri, Bannerghatta Road, Yeshwanthpur), Delhi NCR and Pune Lavasa.</p>
+          </div>
+          <div class="paper-card p-5">
+            <p class="font-mono text-[10.5px] uppercase tracking-[0.1em] text-teal-600">Placements &amp; Alumni</p>
+            <p class="mt-2 text-[0.95rem] leading-relaxed text-ink-soft">A 95% placement rate and an alumni network of 90,000+ graduates worldwide.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="ai-insights" class="border-t border-paper-line px-5 py-10 sm:px-7">
+      <div class="mx-auto max-w-6xl">
+        <h3 class="font-serif text-xl font-semibold text-plum-500">University Highlights</h3>
+        <p class="mt-1 text-[0.9rem] text-ink-faint">Recognition and standing of CHRIST (Deemed to be University).</p>
+        <div class="mt-6 grid grid-cols-1 gap-5 md:grid-cols-3">
+          <div class="relative overflow-hidden rounded-sm border border-teal-500/25 bg-teal-50/60 p-5">
+            <span class="absolute -right-4 -top-4 h-16 w-16 rounded-full bg-teal-500/10"></span>
+            <span class="relative flex h-9 w-9 items-center justify-center rounded-full bg-teal-500 text-white">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 2 7l10 5 10-5-10-5Z"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            </span>
+            <h4 class="relative mt-3 font-serif text-[1.05rem] font-semibold text-teal-800">NAAC A+ Accredited</h4>
+            <p class="relative mt-1.5 text-[0.9rem] leading-relaxed text-ink-soft">Recognized nationally for institutional quality and academic standards.</p>
+          </div>
+          <div class="relative overflow-hidden rounded-sm border border-teal-500/25 bg-teal-50/60 p-5">
+            <span class="absolute -right-4 -top-4 h-16 w-16 rounded-full bg-teal-500/10"></span>
+            <span class="relative flex h-9 w-9 items-center justify-center rounded-full bg-teal-500 text-white">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/></svg>
+            </span>
+            <h4 class="relative mt-3 font-serif text-[1.05rem] font-semibold text-teal-800">339,053+ Library Holdings</h4>
+            <p class="relative mt-1.5 text-[0.9rem] leading-relaxed text-ink-soft">A well-stocked central library supporting research and coursework across all schools.</p>
+          </div>
+          <div class="relative overflow-hidden rounded-sm border border-teal-500/25 bg-teal-50/60 p-5">
+            <span class="absolute -right-4 -top-4 h-16 w-16 rounded-full bg-teal-500/10"></span>
+            <span class="relative flex h-9 w-9 items-center justify-center rounded-full bg-teal-500 text-white">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 2 7l10 5 10-5-10-5Z"/><path d="M22 7v6M6 9.5V15c0 1.66 2.69 3 6 3s6-1.34 6-3V9.5"/></svg>
+            </span>
+            <h4 class="relative mt-3 font-serif text-[1.05rem] font-semibold text-teal-800">Globally Ranked</h4>
+            <p class="relative mt-1.5 text-[0.9rem] leading-relaxed text-ink-soft">Featured in THE, QS, NIRF and WURI rankings among leading institutions.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="border-t border-paper-line bg-[#f6f0e4] px-5 py-10 sm:px-7">
+      <div class="mx-auto max-w-6xl">
+        <article class="prose prose-neutral max-w-2xl prose-headings:font-serif prose-headings:text-plum-500 prose-a:text-teal-600">
+          <h2>About CHRIST (Deemed to be University)</h2>
+          <p>
+            CHRIST (Deemed to be University) is a NAAC A+ accredited institution with campuses across
+            Bangalore, Delhi NCR and Pune. Guided by the vision of &ldquo;Excellence and Service,&rdquo; it runs
+            10 schools offering 250+ programmes to a student body of 38,000+, including 520+ international
+            students from 38+ countries.
+          </p>
+        </article>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="border-t border-paper-line bg-[#ece3d0]">
+    <div class="mx-auto max-w-6xl px-5 py-10 sm:px-8">
+      <div class="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
+        <div class="flex items-start gap-3">
+          <span class="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-plum-500/30 text-plum-500">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+          </span>
+          <div>
+            <p class="font-serif text-base font-semibold text-plum-500">Olivia&rsquo;s Full Stack Development Lab</p>
+            <p class="mt-0.5 font-mono text-[11px] uppercase tracking-[0.1em] text-ink-faint">Lab 01 — Responsive Webpage Layout</p>
+            <p class="mt-1 text-[13px] text-ink-soft">Built with Tailwind CSS</p>
+          </div>
+        </div>
+        <div class="flex flex-col items-start gap-2 sm:items-end">
+          <a href="/" class="font-mono text-[11px] uppercase tracking-[0.12em] text-plum-500 hover:text-plum-600">&larr; Back to Lab Journal</a>
+          <p class="font-mono text-[11px] text-ink-faint" id="copyrightYear">&copy; 2026 Olivia. All rights reserved.</p>
+        </div>
+      </div>
+      <div class="mt-8 border-t border-paper-line pt-4 text-center font-mono text-[10px] uppercase tracking-[0.14em] text-ink-faint">
+        entry logged in the lab notebook
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    var toggle = document.getElementById("navToggle");
+    var panel = document.getElementById("mobileNav");
+    var iconMenu = document.getElementById("iconMenu");
+    var iconClose = document.getElementById("iconClose");
+    toggle.addEventListener("click", function () {
+      var isOpen = panel.getAttribute("data-open") === "true";
+      panel.setAttribute("data-open", String(!isOpen));
+      toggle.setAttribute("aria-expanded", String(!isOpen));
+      iconMenu.classList.toggle("hidden", !isOpen ? true : false);
+      iconClose.classList.toggle("hidden", isOpen ? true : false);
+    });
+    document.getElementById("copyrightYear").textContent =
+      "© " + new Date().getFullYear() + " Olivia. All rights reserved.";
+  </script>
+</body>
+</html>
