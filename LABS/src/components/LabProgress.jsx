@@ -1,4 +1,4 @@
-import { LayoutDashboard, Database, ServerCog, BrainCircuit } from "lucide-react";
+import { LayoutDashboard, Sparkles, ServerCog, BrainCircuit } from "lucide-react";
 import LabCard from "./LabCard.jsx";
 import Divider from "./Divider.jsx";
 
@@ -13,9 +13,11 @@ const labs = [
   },
   {
     index: 2,
-    title: "Lab 2",
-    status: "In Progress",
-    icon: Database,
+    title: "Lab 2 — HTML5 APIs",
+    status: "Completed",
+    description: "HTML5 APIs Integration",
+    icon: Sparkles,
+    href: "/lab-2",
   },
   {
     index: 3,
@@ -40,7 +42,7 @@ export default function LabProgress() {
           Progress so far
         </h2>
         <p className="mt-3 text-ink-soft">
-          Four entries in the notebook &mdash; one built and running, three
+          Four entries in the notebook &mdash; two built and running, two
           waiting on the next page.
         </p>
       </div>

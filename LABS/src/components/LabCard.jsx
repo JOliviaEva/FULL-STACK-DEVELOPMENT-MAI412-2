@@ -46,7 +46,7 @@ export default function LabCard({ index, title, status, description, icon: Icon,
       <div className="hairline mt-5 pt-4">
         {isDone ? (
           <span className="inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.12em] text-plum-500 transition-transform duration-200 group-hover:translate-x-1">
-            View Lab 1
+            View Lab {index}
             <ArrowRight size={13} />
           </span>
         ) : (

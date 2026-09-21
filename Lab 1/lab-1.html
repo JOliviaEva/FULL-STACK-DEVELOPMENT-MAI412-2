@@ -1,0 +1,566 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Lab 01 — UniAI ERP | Olivia's Full Stack Development Lab</title>
+<meta name="description" content="Lab 1: Responsive webpage layout built with plain HTML and CSS — AI-Powered University ERP Management System." />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,500;0,8..60,600;0,8..60,700;1,8..60,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+  rel="stylesheet"
+/>
+
+<style>
+  :root {
+    --plum-50: #F6EEF3;
+    --plum-100: #EBDBE6;
+    --plum-200: #D3AFC5;
+    --plum-500: #601D49;
+    --plum-600: #4C173A;
+    --rose-50: #FBEFF3;
+    --rose-200: #EAB2C3;
+    --rose-500: #BD5579;
+    --teal-50: #EAF6F9;
+    --teal-500: #218DAE;
+    --teal-600: #1A7089;
+    --teal-800: #0D3841;
+    --paper: #F6F0E4;
+    --paper-light: #FBF7EF;
+    --paper-dark: #ECE3D0;
+    --paper-line: #DED2B8;
+    --ink: #2B1B22;
+    --ink-soft: #5A4650;
+    --ink-faint: #8A7A82;
+    --font-serif: "Source Serif 4", Georgia, serif;
+    --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background-color: var(--paper);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+    font-family: var(--font-serif);
+    color: var(--ink);
+  }
+
+  a { color: inherit; text-decoration: none; }
+
+  .wrap {
+    max-width: 72rem;
+    margin: 0 auto;
+    padding: 0 1.25rem;
+  }
+
+  .mono { font-family: var(--font-mono); }
+  .uppercase { text-transform: uppercase; letter-spacing: 0.1em; }
+
+  .paper-card {
+    background-color: var(--paper-light);
+    border: 1px solid rgba(222, 210, 184, 0.8);
+    box-shadow: 0 1px 2px rgba(43, 27, 34, 0.06), 0 8px 24px -8px rgba(43, 27, 34, 0.18);
+    border-radius: 3px;
+  }
+
+  /* ---------- header ---------- */
+  header {
+    background-color: var(--plum-500);
+    color: var(--paper-light);
+  }
+  .header-inner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 1rem 1.25rem;
+  }
+  .brand { display: flex; align-items: center; gap: 0.75rem; }
+  .brand-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 2.5rem;
+    width: 2.5rem;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.1);
+    color: #6cbfd5;
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.25);
+  }
+  .brand-title { font-size: 1.05rem; font-weight: 600; line-height: 1.2; }
+  .brand-sub { margin: 2px 0 0; font-size: 10.5px; color: var(--rose-200); }
+  .header-badge {
+    border: 1px solid rgba(108, 191, 213, 0.4);
+    background: rgba(33, 141, 174, 0.15);
+    color: #9dd5e3;
+    border-radius: 999px;
+    padding: 0.25rem 0.75rem;
+    font-size: 10px;
+  }
+
+  /* ---------- nav ---------- */
+  nav {
+    position: relative;
+    border-bottom: 1px solid rgba(96, 29, 73, 0.2);
+    background: var(--paper-light);
+  }
+  .nav-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.65rem 1.25rem;
+  }
+  .nav-toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    border: 1px solid rgba(96, 29, 73, 0.2);
+    background: none;
+    border-radius: 3px;
+    padding: 0.35rem 0.75rem;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--plum-500);
+    cursor: pointer;
+  }
+  .nav-links {
+    display: none;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    align-items: center;
+    gap: 0.25rem;
+  }
+  .nav-links a {
+    display: block;
+    border-radius: 3px;
+    padding: 0.4rem 0.75rem;
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    color: var(--ink-soft);
+  }
+  .nav-links a.active { background: var(--plum-500); color: white; }
+  .nav-links a:not(.active):hover { background: var(--plum-50); color: var(--plum-500); }
+  .nav-tag { display: none; font-family: var(--font-mono); font-size: 10px; color: var(--ink-faint); }
+
+  #mobileNav {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+    border-top: 1px solid var(--paper-line);
+    background: var(--paper-light);
+  }
+  #mobileNav[data-open="true"] { max-height: 20rem; }
+  #mobileNav ul { list-style: none; margin: 0; padding: 0 1.25rem; }
+  #mobileNav li { border-bottom: 1px solid var(--paper-line); }
+  #mobileNav a {
+    display: block;
+    padding: 0.6rem 0;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--ink-soft);
+  }
+  #mobileNav li:first-child a { color: var(--plum-500); }
+
+  @media (min-width: 768px) {
+    .nav-toggle { display: none; }
+    .nav-links { display: flex; }
+    .nav-tag { display: inline; }
+    #mobileNav { display: none; }
+  }
+
+  /* ---------- dashboard ---------- */
+  main { background: var(--paper-light); }
+  section { padding: 2.5rem 1.25rem; }
+  #dashboard { padding-top: 2.5rem; }
+  h2.section-title { font-family: var(--font-serif); font-size: 1.5rem; font-weight: 600; color: var(--plum-500); margin: 0; }
+  .lede { margin-top: 0.5rem; max-width: 40rem; color: var(--ink-soft); }
+
+  .stat-grid {
+    margin-top: 2rem;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  .stat-card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.25rem;
+  }
+  .stat-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 2.75rem;
+    width: 2.75rem;
+    flex-shrink: 0;
+    border-radius: 999px;
+    border: 1px solid rgba(96, 29, 73, 0.2);
+    color: var(--plum-500);
+  }
+  .stat-icon.rose { border-color: rgba(189, 85, 121, 0.2); color: var(--rose-500); }
+  .stat-icon.teal { border-color: rgba(33, 141, 174, 0.2); color: var(--teal-600); }
+  .stat-value { font-family: var(--font-serif); font-size: 1.4rem; font-weight: 600; margin: 0; }
+  .stat-label { margin: 2px 0 0; font-family: var(--font-mono); font-size: 10.5px; color: var(--ink-faint); }
+
+  @media (min-width: 640px) {
+    .stat-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (min-width: 1280px) {
+    .stat-grid { grid-template-columns: repeat(4, 1fr); }
+  }
+
+  #performance {
+    border-top: 1px solid var(--paper-line);
+    background: var(--paper);
+  }
+  .section-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+    max-width: 72rem;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  h3.subhead { font-family: var(--font-serif); font-size: 1.15rem; font-weight: 600; color: var(--plum-500); margin: 0; }
+  .pill {
+    border: 1px solid rgba(138, 122, 130, 0.3);
+    border-radius: 999px;
+    padding: 0.15rem 0.6rem;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--ink-faint);
+  }
+  .overview-grid, .insight-grid {
+    max-width: 72rem;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+  @media (min-width: 768px) {
+    .overview-grid, .insight-grid { grid-template-columns: repeat(3, 1fr); }
+  }
+  .overview-card { padding: 1.25rem; }
+  .overview-card .kicker { font-family: var(--font-mono); font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--teal-600); }
+  .overview-card p.body { margin-top: 0.5rem; font-size: 0.95rem; line-height: 1.6; color: var(--ink-soft); }
+
+  #ai-insights { border-top: 1px solid var(--paper-line); }
+  .insight-card {
+    position: relative;
+    overflow: hidden;
+    border-radius: 3px;
+    border: 1px solid rgba(33, 141, 174, 0.25);
+    background: rgba(234, 246, 249, 0.6);
+    padding: 1.25rem;
+  }
+  .insight-card::after {
+    content: "";
+    position: absolute;
+    top: -1rem;
+    right: -1rem;
+    height: 4rem;
+    width: 4rem;
+    border-radius: 999px;
+    background: rgba(33, 141, 174, 0.1);
+  }
+  .insight-icon {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 2.25rem;
+    width: 2.25rem;
+    border-radius: 999px;
+    background: var(--teal-500);
+    color: white;
+  }
+  .insight-card h4 { position: relative; margin: 0.75rem 0 0; font-family: var(--font-serif); font-size: 1.05rem; font-weight: 600; color: var(--teal-800); }
+  .insight-card p { position: relative; margin: 0.4rem 0 0; font-size: 0.9rem; line-height: 1.6; color: var(--ink-soft); }
+
+  #about { border-top: 1px solid var(--paper-line); background: var(--paper); }
+  .prose { max-width: 40rem; margin: 0 auto; }
+  .prose h2 { font-family: var(--font-serif); color: var(--plum-500); }
+  .prose p { line-height: 1.7; color: var(--ink-soft); }
+  .prose code {
+    background: var(--paper-dark);
+    border-radius: 3px;
+    padding: 0.1rem 0.35rem;
+    font-family: var(--font-mono);
+    font-size: 0.85em;
+  }
+
+  /* ---------- footer ---------- */
+  footer { border-top: 1px solid var(--paper-line); background: var(--paper-dark); }
+  .footer-inner {
+    padding: 2.5rem 1.25rem;
+    max-width: 72rem;
+    margin: 0 auto;
+  }
+  .footer-top {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  .footer-brand { display: flex; align-items: flex-start; gap: 0.75rem; }
+  .footer-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 2rem;
+    width: 2rem;
+    flex-shrink: 0;
+    border-radius: 999px;
+    border: 1px solid rgba(96, 29, 73, 0.3);
+    color: var(--plum-500);
+    margin-top: 2px;
+  }
+  .footer-brand-title { font-family: var(--font-serif); font-size: 1rem; font-weight: 600; color: var(--plum-500); margin: 0; }
+  .footer-brand-sub { margin: 2px 0 0; font-family: var(--font-mono); font-size: 11px; color: var(--ink-faint); }
+  .footer-brand-built { margin: 4px 0 0; font-size: 13px; color: var(--ink-soft); }
+  .footer-links { display: flex; flex-direction: column; align-items: flex-start; gap: 0.5rem; }
+  .footer-links a { font-family: var(--font-mono); font-size: 11px; color: var(--plum-500); }
+  .footer-links p { margin: 0; font-family: var(--font-mono); font-size: 11px; color: var(--ink-faint); }
+  .footer-bottom {
+    margin-top: 2rem;
+    border-top: 1px solid var(--paper-line);
+    padding-top: 1rem;
+    text-align: center;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--ink-faint);
+  }
+
+  @media (min-width: 640px) {
+    .footer-top { flex-direction: row; align-items: flex-start; justify-content: space-between; }
+    .footer-links { align-items: flex-end; }
+  }
+</style>
+</head>
+
+<body>
+
+  <!-- ============ HEADER ============ -->
+  <header>
+    <div class="wrap header-inner">
+      <div class="brand">
+        <span class="brand-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 3v4M12 17v4M3 12h4M17 12h4M5.6 5.6l2.8 2.8M15.6 15.6l2.8 2.8M18.4 5.6l-2.8 2.8M8.4 15.6l-2.8 2.8" />
+          </svg>
+        </span>
+        <div>
+          <p class="brand-title">UniAI ERP</p>
+          <p class="brand-sub mono uppercase">AI-Powered University ERP Management System</p>
+        </div>
+      </div>
+      <span class="header-badge mono uppercase">HTML &amp; CSS</span>
+    </div>
+  </header>
+
+  <!-- ============ NAVIGATION BAR ============ -->
+  <nav>
+    <div class="wrap nav-inner">
+      <button id="navToggle" type="button" aria-expanded="false" aria-controls="mobileNav" class="nav-toggle">
+        <svg id="iconMenu" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
+        <svg id="iconClose" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none"><path stroke-linecap="round" d="M6 6l12 12M18 6L6 18"/></svg>
+        Menu
+      </button>
+
+      <ul class="nav-links">
+        <li><a href="#dashboard" class="active">Dashboard</a></li>
+        <li><a href="#students">Students</a></li>
+        <li><a href="#faculty">Faculty</a></li>
+        <li><a href="#courses">Courses</a></li>
+        <li><a href="#performance">Academic Performance</a></li>
+        <li><a href="#ai-insights">AI Insights</a></li>
+      </ul>
+
+      <span class="nav-tag mono uppercase">Frontend Demo</span>
+    </div>
+
+    <div id="mobileNav" data-open="false">
+      <ul>
+        <li><a href="#dashboard">Dashboard</a></li>
+        <li><a href="#students">Students</a></li>
+        <li><a href="#faculty">Faculty</a></li>
+        <li><a href="#courses">Courses</a></li>
+        <li><a href="#performance">Academic Performance</a></li>
+        <li><a href="#ai-insights">AI Insights</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- ============ MAIN CONTENT ============ -->
+  <main>
+
+    <!-- welcome + stats -->
+    <section id="dashboard" class="wrap">
+      <h2 class="section-title">Welcome to UniAI ERP</h2>
+      <p class="lede">
+        An intelligent university management platform designed to streamline academic information, student records and AI-powered insights.
+      </p>
+
+      <div class="stat-grid">
+        <div class="paper-card stat-card">
+          <span class="stat-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          </span>
+          <div>
+            <p class="stat-value">2,450</p>
+            <p class="stat-label mono uppercase">Total Students</p>
+          </div>
+        </div>
+        <div class="paper-card stat-card">
+          <span class="stat-icon rose">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5-10-5Z"/><path d="M6 12v5c0 1.66 2.69 3 6 3s6-1.34 6-3v-5"/></svg>
+          </span>
+          <div>
+            <p class="stat-value">186</p>
+            <p class="stat-label mono uppercase">Faculty Members</p>
+          </div>
+        </div>
+        <div class="paper-card stat-card">
+          <span class="stat-icon teal">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/></svg>
+          </span>
+          <div>
+            <p class="stat-value">74</p>
+            <p class="stat-label mono uppercase">Active Courses</p>
+          </div>
+        </div>
+        <div class="paper-card stat-card">
+          <span class="stat-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M5.6 5.6l2.8 2.8M15.6 15.6l2.8 2.8M18.4 5.6l-2.8 2.8M8.4 15.6l-2.8 2.8"/></svg>
+          </span>
+          <div>
+            <p class="stat-value">24</p>
+            <p class="stat-label mono uppercase">AI Insights</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- academic overview -->
+    <section id="performance">
+      <div class="section-head">
+        <h3 class="subhead">Academic Overview</h3>
+        <span class="pill mono uppercase">Sample Data</span>
+      </div>
+      <div class="overview-grid">
+        <div id="students" class="paper-card overview-card">
+          <p class="kicker mono">Recent Student Activity</p>
+          <p class="body">Students showing improved academic performance.</p>
+        </div>
+        <div id="faculty" class="paper-card overview-card">
+          <p class="kicker mono">Academic Performance Overview</p>
+          <p class="body">Attendance requires attention in selected courses.</p>
+        </div>
+        <div id="courses" class="paper-card overview-card">
+          <p class="kicker mono">AI-Generated Insights</p>
+          <p class="body">Several students may benefit from additional academic support.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- AI insights -->
+    <section id="ai-insights">
+      <div class="wrap" style="padding:0;">
+        <h3 class="subhead">AI Academic Insights</h3>
+        <p class="mono" style="margin-top:4px;font-size:0.9rem;color:var(--ink-faint);text-transform:none;letter-spacing:normal;">Frontend sample insights — no live AI model is running.</p>
+      </div>
+      <div class="insight-grid" style="margin-top:1.5rem;">
+        <div class="insight-card">
+          <span class="insight-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M22 7 13.5 15.5 8.5 10.5 2 17"/><path d="M16 7h6v6"/></svg>
+          </span>
+          <h4>Performance Trend</h4>
+          <p>Overall academic performance is showing a positive trend.</p>
+        </div>
+        <div class="insight-card">
+          <span class="insight-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z"/><path d="M12 9v4M12 17h.01"/></svg>
+          </span>
+          <h4>Attendance Alert</h4>
+          <p>Some students may require attendance monitoring.</p>
+        </div>
+        <div class="insight-card">
+          <span class="insight-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 22h4M15 2a6 6 0 0 0-3 11c.4.4.8 1.1.8 1.6V15h4.4v-1.4c0-.5.4-1.2.8-1.6A6 6 0 0 0 15 2Z"/></svg>
+          </span>
+          <h4>Learning Recommendation</h4>
+          <p>Personalized learning support can be recommended based on academic patterns.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- about -->
+    <section id="about">
+      <article class="prose">
+        <h2>About UniAI ERP</h2>
+        <p>
+          UniAI ERP is a demonstration university management platform built to explore how a full stack
+          application might organize student records, faculty information and course data behind a single,
+          coherent interface.
+        </p>
+        <p>
+          This version is written with plain, hand-authored <code>HTML</code> and <code>CSS</code> —
+          no framework or utility library — using custom properties for the color palette and
+          media queries for the responsive layout.
+        </p>
+      </article>
+    </section>
+
+  </main>
+
+  <!-- ============ FOOTER ============ -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-top">
+        <div class="footer-brand">
+          <span class="footer-icon">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+          </span>
+          <div>
+            <p class="footer-brand-title">Olivia&rsquo;s Full Stack Development Lab</p>
+            <p class="footer-brand-sub mono uppercase">Lab 01 — Responsive Webpage Layout</p>
+            <p class="footer-brand-built">Built with plain HTML &amp; CSS</p>
+          </div>
+        </div>
+        <div class="footer-links">
+          <a href="../README.md" class="mono uppercase">&larr; Back to Lab Journal</a>
+          <p class="mono" id="copyrightYear">&copy; 2026 Olivia. All rights reserved.</p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        entry logged in the lab notebook
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // mobile nav toggle — plain vanilla JS, no framework
+    var toggle = document.getElementById("navToggle");
+    var panel = document.getElementById("mobileNav");
+    var iconMenu = document.getElementById("iconMenu");
+    var iconClose = document.getElementById("iconClose");
+    toggle.addEventListener("click", function () {
+      var isOpen = panel.getAttribute("data-open") === "true";
+      panel.setAttribute("data-open", String(!isOpen));
+      toggle.setAttribute("aria-expanded", String(!isOpen));
+      iconMenu.style.display = isOpen ? "block" : "none";
+      iconClose.style.display = isOpen ? "none" : "block";
+    });
+    document.getElementById("copyrightYear").textContent =
+      "© " + new Date().getFullYear() + " Olivia. All rights reserved.";
+  </script>
+</body>
+</html>

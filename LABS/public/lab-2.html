@@ -1,0 +1,1296 @@
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Lab 02 — UniAI ERP for CHRIST University | HTML5 APIs | Olivia's Full Stack Development Lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,500;0,8..60,600;0,8..60,700;1,8..60,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+  rel="stylesheet"
+/>
+
+<!-- tailwind via cdn -->
+<script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          plum: { 50: "#F6EEF3", 100: "#EBDBE6", 200: "#D3AFC5", 300: "#B983A4", 400: "#8E4C77", 500: "#601D49", 600: "#4C173A", 700: "#39112B", 800: "#270B1D" },
+          rose: { 50: "#FBEFF3", 100: "#F5D9E2", 200: "#EAB2C3", 300: "#DE8CA6", 500: "#BD5579", 600: "#9A4062", 700: "#732F49" },
+          teal: { 50: "#EAF6F9", 100: "#CEEAF1", 200: "#9DD5E3", 300: "#6CBFD5", 500: "#218DAE", 600: "#1A7089", 700: "#145465", 800: "#0D3841" },
+          paper: { DEFAULT: "#F6F0E4", light: "#FBF7EF", dark: "#ECE3D0", line: "#DED2B8" },
+          ink: { DEFAULT: "#2B1B22", soft: "#5A4650", faint: "#8A7A82" },
+        },
+        fontFamily: {
+          serif: ["'Source Serif 4'", "Georgia", "serif"],
+          mono: ["'IBM Plex Mono'", "ui-monospace", "monospace"],
+        },
+        boxShadow: {
+          paper: "0 1px 2px rgba(43,27,34,0.06), 0 8px 24px -8px rgba(43,27,34,0.18)",
+          card: "0 1px 3px rgba(43,27,34,0.08), 0 10px 30px -12px rgba(96,29,73,0.25)",
+        },
+      },
+    },
+  };
+</script>
+
+<style>
+  body {
+    background-color: #f6f0e4;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+    font-family: "Source Serif 4", Georgia, serif;
+  }
+  .paper-card {
+    background-color: #fbf7ef;
+    border: 1px solid rgba(222, 210, 184, 0.8);
+    box-shadow: 0 1px 2px rgba(43, 27, 34, 0.06), 0 8px 24px -8px rgba(43, 27, 34, 0.18);
+    border-radius: 3px;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+  }
+  .paper-card.lift:hover { transform: translateY(-3px); box-shadow: 0 4px 10px rgba(43,27,34,0.08), 0 16px 32px -10px rgba(43,27,34,0.28); }
+  #mobileNav {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+  }
+  #mobileNav[data-open="true"] {
+    max-height: 28rem;
+  }
+
+  /* dashboard blobs */
+  #dashboard { position: relative; overflow: hidden; }
+  #dashboard .blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(55px);
+    opacity: 0.32;
+    animation: float 17s ease-in-out infinite;
+    z-index: 0;
+  }
+  #dashboard .b1 { width: 18rem; height: 18rem; background: #218DAE; top: -6rem; left: -4rem; }
+  #dashboard .b2 { width: 14rem; height: 14rem; background: #BD5579; bottom: -5rem; right: -3rem; animation-delay: -5s; }
+  #dashboard .b3 { width: 10rem; height: 10rem; background: #601D49; top: 45%; right: 12%; opacity: 0.18; animation-delay: -9s; }
+  #dashboard > .relative-content { position: relative; z-index: 1; }
+  @keyframes float {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    33% { transform: translate(1.75rem, -1.25rem) scale(1.08); }
+    66% { transform: translate(-1.25rem, 1.75rem) scale(0.95); }
+  }
+
+  /* ---------- photo hero banner (real background image + Ken Burns animation) ---------- */
+  .hero-banner { position: relative; height: 460px; overflow: hidden; }
+  @media (max-width: 640px) { .hero-banner { height: 380px; } }
+  .hero-banner .bg-photo {
+    position: absolute;
+    inset: -6%;
+    background-image: url("https://christuniversity.in/uploads/banners/banner/1776585159_2026-09-05_12-48-36.jpg");
+    background-size: cover;
+    background-position: center;
+    animation: kenburns 26s ease-in-out infinite alternate;
+    will-change: transform;
+  }
+  .hero-banner .overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(76,23,58,0.55) 0%, rgba(27,20,32,0.55) 55%, rgba(27,20,32,0.85) 100%);
+  }
+  @keyframes kenburns {
+    from { transform: scale(1) translate(0, 0); }
+    to { transform: scale(1.14) translate(-1.5%, -1.5%); }
+  }
+  .hero-banner .particle {
+    position: absolute;
+    bottom: -5%;
+    width: 5px;
+    height: 5px;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.65);
+    animation: particle-rise 10s linear infinite;
+  }
+  @keyframes particle-rise {
+    0% { transform: translateY(0) scale(1); opacity: 0; }
+    12% { opacity: 0.85; }
+    88% { opacity: 0.25; }
+    100% { transform: translateY(-420px) scale(0.4); opacity: 0; }
+  }
+  .hero-banner-content { position: relative; z-index: 2; height: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: center; color: #FBF7EF; }
+  .hero-scroll-cta { animation: bounce-y 1.8s ease-in-out infinite; }
+  @keyframes bounce-y {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(6px); }
+  }
+
+  /* photo band, reused in campus + contact */
+  .photo-band { position: relative; height: 200px; border-radius: 6px; overflow: hidden; }
+  .photo-band .bg-photo {
+    position: absolute;
+    inset: -6%;
+    background-size: cover;
+    background-position: center;
+    animation: kenburns 20s ease-in-out infinite alternate;
+  }
+  .photo-band.campus .bg-photo { background-image: url("https://christuniversity.in/images/why-immg_1.jpg"); }
+  .photo-band.contact .bg-photo { background-image: url("https://christuniversity.in/images/why-immg_3.jpg"); }
+  .photo-band .overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(0deg, rgba(27,20,32,0.78) 0%, rgba(27,20,32,0) 65%);
+  }
+  .photo-band .caption { position: absolute; left: 1rem; bottom: 0.75rem; z-index: 2; color: #FBF7EF; }
+
+  /* marquee */
+  .marquee-wrap { background: #4C173A; color: #FBEFF3; overflow: hidden; white-space: nowrap; border-bottom: 1px solid rgba(0,0,0,0.15); }
+  .marquee-track { display: inline-flex; align-items: center; animation: marquee 28s linear infinite; padding: 0.4rem 0; }
+  .marquee-wrap:hover .marquee-track { animation-play-state: paused; }
+  .marquee-track span { font-family: "IBM Plex Mono", monospace; font-size: 11px; letter-spacing: 0.04em; padding: 0 2rem; position: relative; }
+  .marquee-track span::after { content: "•"; position: absolute; right: -0.15rem; opacity: 0.5; }
+  @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+  /* fade in on scroll */
+  .reveal { opacity: 0; transform: translateY(16px); transition: opacity 0.6s ease, transform 0.6s ease; }
+  .reveal.in-view { opacity: 1; transform: translateY(0); }
+
+  /* pulse animation */
+  .insight-icon { animation: pulse-ring 2.4s ease-in-out infinite; }
+  @keyframes pulse-ring {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(33,141,174,0.35); }
+    50% { box-shadow: 0 0 0 8px rgba(33,141,174,0); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .marquee-track, #dashboard .blob, .insight-icon, .chat-fab { animation: none; }
+    .hero-banner .bg-photo, .hero-banner .particle, .hero-scroll-cta, .photo-band .bg-photo { animation: none; }
+    .reveal { opacity: 1; transform: none; transition: none; }
+  }
+
+  /* chart */
+  #chartWrapper:fullscreen, #chartWrapper:-webkit-full-screen {
+    display: flex; flex-direction: column; justify-content: center; background: #fbf7ef; padding: 2rem;
+  }
+  #perfCanvas { width: 100%; height: 260px; display: block; }
+
+  /* dropzone */
+  .dropzone { border: 2px dashed #DED2B8; transition: border-color 0.2s ease, background 0.2s ease, color 0.2s ease; cursor: pointer; }
+  .dropzone.drag-over { border-color: #218DAE; background: #EAF6F9; color: #0D3841; }
+
+  .api-pill { border: 1px solid rgba(33,141,174,0.35); background: rgba(33,141,174,0.1); color: #1A7089; }
+  .status-note { min-height: 1.2em; }
+  .status-note.ok { color: #1A7089; }
+  .status-note.err { color: #9A4062; }
+
+  /* map card, just a photo + pin, no iframe */
+  .map-card { position: relative; height: 260px; border-radius: 4px; overflow: hidden; }
+  .map-card .bg-photo { position: absolute; inset: -6%; background-size: cover; background-position: center; filter: saturate(0.92); }
+  .map-card .overlay { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(27,20,32,0.1) 0%, rgba(27,20,32,0.35) 55%, rgba(27,20,32,0.8) 100%); }
+  .map-card .pin { position: absolute; top: 44%; left: 50%; transform: translate(-50%, -100%); z-index: 2; }
+  .map-card .pin-ring {
+    position: absolute; left: 50%; bottom: -3px; width: 10px; height: 10px; border-radius: 999px;
+    background: rgba(96,29,73,0.35); transform: translateX(-50%); animation: pulse-ring 2.2s ease-in-out infinite;
+  }
+  .map-card-footer {
+    position: absolute; left: 0; right: 0; bottom: 0; z-index: 2;
+    display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.5rem;
+    padding: 0.65rem 0.75rem;
+  }
+
+  /* faint dot pattern bg */
+  #ai-capabilities {
+    position: relative;
+    background-color: #f6f0e4;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300' viewBox='0 0 300 300'%3E%3Cg fill='none' stroke='%23601D49' stroke-opacity='0.06' stroke-width='1'%3E%3Ccircle cx='40' cy='40' r='3' fill='%23601D49' fill-opacity='0.12' stroke='none'/%3E%3Ccircle cx='150' cy='90' r='3' fill='%23218DAE' fill-opacity='0.14' stroke='none'/%3E%3Ccircle cx='260' cy='50' r='3' fill='%23601D49' fill-opacity='0.12' stroke='none'/%3E%3Ccircle cx='80' cy='200' r='3' fill='%23218DAE' fill-opacity='0.14' stroke='none'/%3E%3Ccircle cx='230' cy='230' r='3' fill='%23601D49' fill-opacity='0.12' stroke='none'/%3E%3Cpath d='M40 40 150 90 260 50M40 40 80 200M150 90 230 230M80 200 230 230'/%3E%3C/g%3E%3C/svg%3E");
+  }
+
+  /* chat widget */
+  .chat-fab {
+    position: fixed;
+    right: 1.25rem;
+    bottom: 1.25rem;
+    z-index: 50;
+    height: 3.25rem;
+    width: 3.25rem;
+    border-radius: 999px;
+    background: #601D49;
+    color: #FBF7EF;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 10px 30px -8px rgba(96,29,73,0.55);
+    cursor: pointer;
+    animation: chat-pulse 2.6s ease-in-out infinite;
+    border: none;
+  }
+  .chat-fab:hover { background: #4C173A; }
+  @keyframes chat-pulse {
+    0%, 100% { box-shadow: 0 10px 30px -8px rgba(96,29,73,0.55), 0 0 0 0 rgba(96,29,73,0.35); }
+    50% { box-shadow: 0 10px 30px -8px rgba(96,29,73,0.55), 0 0 0 10px rgba(96,29,73,0); }
+  }
+  .chat-panel {
+    position: fixed;
+    right: 1.25rem;
+    bottom: 5rem;
+    z-index: 50;
+    width: min(22rem, calc(100vw - 2.5rem));
+    max-height: 26rem;
+    display: flex;
+    flex-direction: column;
+    background: #fbf7ef;
+    border: 1px solid #DED2B8;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(43,27,34,0.08), 0 20px 40px -12px rgba(96,29,73,0.35);
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+    pointer-events: none;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+  }
+  .chat-panel.open { opacity: 1; transform: translateY(0) scale(1); pointer-events: auto; }
+  .chat-log { flex: 1; overflow-y: auto; padding: 0.85rem; display: flex; flex-direction: column; gap: 0.5rem; max-height: 16rem; }
+  .chat-bubble { max-width: 85%; padding: 0.5rem 0.7rem; border-radius: 8px; font-size: 0.82rem; line-height: 1.45; }
+  .chat-bubble.bot { align-self: flex-start; background: #EAF6F9; color: #0D3841; border-bottom-left-radius: 2px; }
+  .chat-bubble.user { align-self: flex-end; background: #601D49; color: #FBF7EF; border-bottom-right-radius: 2px; }
+  .chat-typing { align-self: flex-start; display: inline-flex; gap: 3px; padding: 0.5rem 0.7rem; background: #EAF6F9; border-radius: 8px; border-bottom-left-radius: 2px; }
+  .chat-typing span { height: 5px; width: 5px; border-radius: 999px; background: #1A7089; animation: chat-dot 1.2s ease-in-out infinite; }
+  .chat-typing span:nth-child(2) { animation-delay: 0.15s; }
+  .chat-typing span:nth-child(3) { animation-delay: 0.3s; }
+  @keyframes chat-dot { 0%, 60%, 100% { transform: translateY(0); opacity: 0.5; } 30% { transform: translateY(-3px); opacity: 1; } }
+</style>
+</head>
+
+<body class="text-ink antialiased">
+
+  <header class="bg-plum-500 text-paper-light">
+    <div class="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-5 py-4 sm:px-7">
+      <div class="flex items-center gap-4">
+        <span class="flex h-16 w-28 shrink-0 items-center justify-center rounded-sm bg-white px-2 py-1.5 shadow-paper sm:h-20 sm:w-36">
+          <img src="/christ-university-logo.png" alt="CHRIST (Deemed to be University) logo" class="h-full w-full object-contain" />
+        </span>
+        <div>
+          <p class="font-serif text-lg font-semibold leading-tight sm:text-xl">CHRIST (Deemed to be University)</p>
+          <p class="font-mono text-[10px] uppercase tracking-[0.12em] text-rose-200/90 sm:text-[11px]">
+            Empowering Minds, Inspiring Futures
+          </p>
+        </div>
+      </div>
+      <span class="rounded-full border border-teal-300/40 bg-teal-500/15 px-3 py-1 font-mono text-[10px] uppercase tracking-[0.1em] text-teal-200">
+        HTML5 APIs &amp; Tailwind CSS
+      </span>
+    </div>
+  </header>
+
+  <nav class="relative border-b border-plum-700/20 bg-[#fbf7ef]">
+    <div class="mx-auto flex max-w-6xl items-center justify-between px-5 py-2.5 sm:px-7">
+      <button
+        id="navToggle"
+        type="button"
+        aria-expanded="false"
+        aria-controls="mobileNav"
+        class="flex items-center gap-2 rounded-sm border border-plum-500/20 px-3 py-1.5 font-mono text-[11px] uppercase tracking-[0.1em] text-plum-500 md:hidden"
+      >
+        <svg id="iconMenu" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
+        <svg id="iconClose" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="hidden"><path stroke-linecap="round" d="M6 6l12 12M18 6L6 18"/></svg>
+        Menu
+      </button>
+
+      <ul id="navLinks" class="hidden flex-wrap items-center gap-1 md:flex">
+        <li><a href="#dashboard" data-section="Dashboard" class="nav-link rounded-sm px-2.5 py-1.5 font-mono text-[11px] uppercase tracking-[0.06em] bg-plum-500 text-white">Dashboard</a></li>
+        <li><a href="#performance" data-section="Performance" class="nav-link rounded-sm px-2.5 py-1.5 font-mono text-[11px] uppercase tracking-[0.06em] text-ink-soft hover:bg-plum-50 hover:text-plum-500">Performance</a></li>
+        <li><a href="#ai-capabilities" data-section="AI Capabilities" class="nav-link rounded-sm px-2.5 py-1.5 font-mono text-[11px] uppercase tracking-[0.06em] text-ink-soft hover:bg-plum-50 hover:text-plum-500">AI Capabilities</a></li>
+        <li><a href="#uploads" data-section="Uploads" class="nav-link rounded-sm px-2.5 py-1.5 font-mono text-[11px] uppercase tracking-[0.06em] text-ink-soft hover:bg-plum-50 hover:text-plum-500">Uploads</a></li>
+        <li><a href="#ai-insights" data-section="Highlights" class="nav-link rounded-sm px-2.5 py-1.5 font-mono text-[11px] uppercase tracking-[0.06em] text-ink-soft hover:bg-plum-50 hover:text-plum-500">Highlights</a></li>
+        <li><a href="#campus" data-section="Campus" class="nav-link rounded-sm px-2.5 py-1.5 font-mono text-[11px] uppercase tracking-[0.06em] text-ink-soft hover:bg-plum-50 hover:text-plum-500">Campus</a></li>
+        <li><a href="#contact" data-section="Contact" class="nav-link rounded-sm px-2.5 py-1.5 font-mono text-[11px] uppercase tracking-[0.06em] text-ink-soft hover:bg-plum-50 hover:text-plum-500">Contact</a></li>
+      </ul>
+
+      <span class="hidden font-mono text-[10px] uppercase tracking-[0.1em] text-ink-faint sm:inline">Student ERP Portal</span>
+    </div>
+
+    <div id="mobileNav" data-open="false" class="border-t border-plum-500/10 bg-[#fbf7ef] md:hidden">
+      <ul id="mobileNavLinks" class="divide-y divide-paper-line px-5">
+        <li><a href="#dashboard" data-section="Dashboard" class="block py-2.5 font-mono text-[12px] uppercase tracking-[0.08em] text-plum-500">Dashboard</a></li>
+        <li><a href="#performance" data-section="Performance" class="block py-2.5 font-mono text-[12px] uppercase tracking-[0.08em] text-ink-soft">Performance</a></li>
+        <li><a href="#ai-capabilities" data-section="AI Capabilities" class="block py-2.5 font-mono text-[12px] uppercase tracking-[0.08em] text-ink-soft">AI Capabilities</a></li>
+        <li><a href="#uploads" data-section="Uploads" class="block py-2.5 font-mono text-[12px] uppercase tracking-[0.08em] text-ink-soft">Uploads</a></li>
+        <li><a href="#ai-insights" data-section="Highlights" class="block py-2.5 font-mono text-[12px] uppercase tracking-[0.08em] text-ink-soft">Highlights</a></li>
+        <li><a href="#campus" data-section="Campus" class="block py-2.5 font-mono text-[12px] uppercase tracking-[0.08em] text-ink-soft">Campus</a></li>
+        <li><a href="#contact" data-section="Contact" class="block py-2.5 font-mono text-[12px] uppercase tracking-[0.08em] text-ink-soft">Contact</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- announcement ticker -->
+  <div class="marquee-wrap" role="marquee" aria-label="Announcements ticker">
+    <div class="marquee-track" id="marqueeTrack">
+      <span>📢 Registrations open for the next semester's electives</span>
+      <span>📍 Campus locator now live — find your distance to CHRIST University</span>
+      <span>📎 Document uploads now support drag &amp; drop</span>
+      <span>🔔 Enable browser alerts to get notified of new campus highlights</span>
+      <span>🗺️ Explore the campus map in the Campus section below</span>
+    </div>
+  </div>
+
+  <main class="bg-[#fbf7ef]">
+
+    <!-- hero banner -->
+    <div class="hero-banner">
+      <div class="bg-photo"></div>
+      <div class="overlay"></div>
+      <div class="particles" aria-hidden="true">
+        <span class="particle" style="left:6%; animation-delay:0s;"></span>
+        <span class="particle" style="left:16%; animation-delay:1.2s;"></span>
+        <span class="particle" style="left:28%; animation-delay:2.6s;"></span>
+        <span class="particle" style="left:41%; animation-delay:0.6s;"></span>
+        <span class="particle" style="left:55%; animation-delay:3.4s;"></span>
+        <span class="particle" style="left:67%; animation-delay:1.8s;"></span>
+        <span class="particle" style="left:79%; animation-delay:4.2s;"></span>
+        <span class="particle" style="left:90%; animation-delay:2.1s;"></span>
+      </div>
+      <div class="hero-banner-content mx-auto max-w-6xl px-5 sm:px-7">
+        <span class="rounded-full border border-teal-300/50 bg-teal-500/20 px-3 py-1 font-mono text-[10px] uppercase tracking-[0.12em] text-teal-100">AI-Powered University ERP</span>
+        <h1 class="mt-4 font-serif text-3xl font-semibold leading-tight sm:text-5xl">UniAI ERP</h1>
+        <p class="mt-3 max-w-xl text-[0.95rem] text-rose-50/90 sm:text-base">
+          Predictive retention, an NLP assistant and personalized learning — for CHRIST (Deemed to be University).
+          Moving from a passive records database to a system that reaches out before problems do.
+        </p>
+        <a href="#dashboard-stats" data-section="Dashboard" class="hero-scroll-cta mt-6 inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.12em] text-teal-100">
+          Explore the live snapshot
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M19 12l-7 7-7-7"/></svg>
+        </a>
+      </div>
+    </div>
+
+    <section id="dashboard" class="px-5 py-10 sm:px-7">
+      <span class="blob b1"></span>
+      <span class="blob b2"></span>
+      <span class="blob b3"></span>
+      <div id="dashboard-stats" class="relative-content mx-auto max-w-6xl" style="scroll-margin-top: 4.5rem;">
+        <h2 class="font-serif text-2xl font-semibold text-plum-500 sm:text-[1.75rem]">Live ERP Snapshot</h2>
+        <p class="mt-2 max-w-2xl text-ink-soft">
+          A quick read on CHRIST (Deemed to be University) — enrollment, schools and programmes, refreshed the
+          way a predictive dashboard would surface them.
+        </p>
+
+        <div class="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+
+          <div class="paper-card lift reveal flex items-center gap-4 p-5">
+            <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-plum-500/20 text-plum-500">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            </span>
+            <div>
+              <p class="font-serif text-2xl font-semibold text-ink">38,000+</p>
+              <p class="font-mono text-[10.5px] uppercase tracking-[0.1em] text-ink-faint">Total Students</p>
+            </div>
+          </div>
+
+          <div class="paper-card lift reveal flex items-center gap-4 p-5">
+            <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-rose-500/20 text-rose-600">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5-10-5Z"/><path d="M6 12v5c0 1.66 2.69 3 6 3s6-1.34 6-3v-5"/></svg>
+            </span>
+            <div>
+              <p class="font-serif text-2xl font-semibold text-ink">10</p>
+              <p class="font-mono text-[10.5px] uppercase tracking-[0.1em] text-ink-faint">Schools</p>
+            </div>
+          </div>
+
+          <div class="paper-card lift reveal flex items-center gap-4 p-5">
+            <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-teal-500/20 text-teal-600">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/></svg>
+            </span>
+            <div>
+              <p class="font-serif text-2xl font-semibold text-ink">250+</p>
+              <p class="font-mono text-[10.5px] uppercase tracking-[0.1em] text-ink-faint">Programmes Offered</p>
+            </div>
+          </div>
+
+          <div class="paper-card lift reveal flex items-center gap-4 p-5">
+            <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-plum-500/20 text-plum-500">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10Z"/></svg>
+            </span>
+            <div>
+              <p class="font-serif text-2xl font-semibold text-ink">520+</p>
+              <p class="font-mono text-[10.5px] uppercase tracking-[0.1em] text-ink-faint">International Students</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- performance chart -->
+    <section id="performance" class="border-t border-paper-line px-5 py-14 sm:px-7">
+      <div class="mx-auto max-w-6xl">
+        <h3 class="font-serif text-xl font-semibold text-plum-500">Academic Performance</h3>
+        <p class="mt-1 text-[0.9rem] text-ink-faint">Campus footprint and graduate outcomes.</p>
+        <div class="mt-6 grid grid-cols-1 gap-5 md:grid-cols-2">
+          <div class="paper-card p-5">
+            <p class="font-mono text-[10.5px] uppercase tracking-[0.1em] text-teal-600">Campuses</p>
+            <p class="mt-2 text-[0.95rem] leading-relaxed text-ink-soft">Six campuses across Bangalore (Central, Kengeri, Bannerghatta Road, Yeshwanthpur), Delhi NCR and Pune Lavasa.</p>
+          </div>
+          <div class="paper-card p-5">
+            <p class="font-mono text-[10.5px] uppercase tracking-[0.1em] text-teal-600">Placements &amp; Alumni</p>
+            <p class="mt-2 text-[0.95rem] leading-relaxed text-ink-soft">A 95% placement rate and an alumni network of 90,000+ graduates worldwide.</p>
+          </div>
+        </div>
+
+        <div class="mt-8 flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <p class="font-serif text-[1.05rem] font-semibold text-plum-500">Placement Rate — 5 Year Trend</p>
+            <p class="mt-0.5 font-mono text-[10.5px] text-ink-faint">Rendered live with the <span class="api-pill inline-block rounded-full px-2 py-0.5 font-mono text-[9.5px]">Canvas API</span></p>
+          </div>
+          <button id="fullscreenBtn" type="button" class="inline-flex items-center gap-1.5 rounded-sm border border-plum-500/25 bg-[#fbf7ef] px-3 py-1.5 font-mono text-[11px] text-plum-500 hover:bg-plum-50">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3M21 8V5a2 2 0 0 0-2-2h-3M3 16v3a2 2 0 0 0 2 2h3M16 21h3a2 2 0 0 0 2-2v-3"/></svg>
+            Fullscreen
+          </button>
+        </div>
+        <div id="chartWrapper" class="paper-card reveal mt-4 p-4">
+          <canvas id="perfCanvas">Your browser does not support the Canvas API — chart unavailable.</canvas>
+        </div>
+        <p class="status-note font-mono text-[11px] mt-2" id="fullscreenNote"></p>
+      </div>
+    </section>
+
+    <!-- ai capabilities -->
+    <section id="ai-capabilities" class="border-t border-paper-line px-5 py-14 sm:px-7">
+      <div class="mx-auto max-w-6xl">
+        <h3 class="font-serif text-xl font-semibold text-plum-500">From Passive Records to a Predictive Engine</h3>
+        <p class="mt-1 max-w-2xl text-[0.9rem] text-ink-faint">
+          Traditional ERPs sit still until someone queries them. UniAI ERP layers machine learning, NLP and
+          automation on top so the platform surfaces problems — and personalized help — before anyone has to ask.
+        </p>
+
+        <div class="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div class="reveal paper-card lift p-5">
+            <span class="flex h-9 w-9 items-center justify-center rounded-full bg-teal-50 text-teal-600">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+            </span>
+            <h4 class="mt-3 font-serif text-[1.05rem] font-semibold text-ink">Predictive Student Retention</h4>
+            <p class="mt-1.5 text-[0.85rem] leading-relaxed text-ink-soft">Flags at-risk students from attendance and grade trends, before a dropout becomes a statistic.</p>
+          </div>
+          <div class="reveal paper-card lift p-5">
+            <span class="flex h-9 w-9 items-center justify-center rounded-full bg-teal-50 text-teal-600">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+            </span>
+            <h4 class="mt-3 font-serif text-[1.05rem] font-semibold text-ink">Intelligent Schedule Optimization</h4>
+            <p class="mt-1.5 text-[0.85rem] leading-relaxed text-ink-soft">Balances classroom, faculty and timetable constraints automatically as enrollment shifts.</p>
+          </div>
+          <div class="reveal paper-card lift p-5">
+            <span class="flex h-9 w-9 items-center justify-center rounded-full bg-teal-50 text-teal-600">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            </span>
+            <h4 class="mt-3 font-serif text-[1.05rem] font-semibold text-ink">NLP Chatbots &amp; Virtual Assistants</h4>
+            <p class="mt-1.5 text-[0.85rem] leading-relaxed text-ink-soft">Answers routine student questions instantly. Try the assistant bubble in the corner of this page.</p>
+          </div>
+          <div class="reveal paper-card lift p-5">
+            <span class="flex h-9 w-9 items-center justify-center rounded-full bg-teal-50 text-teal-600">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg>
+            </span>
+            <h4 class="mt-3 font-serif text-[1.05rem] font-semibold text-ink">Automated Admissions Processing</h4>
+            <p class="mt-1.5 text-[0.85rem] leading-relaxed text-ink-soft">Intakes and sorts admission documents automatically — see it in action in the Uploads section below.</p>
+          </div>
+          <div class="reveal paper-card lift p-5">
+            <span class="flex h-9 w-9 items-center justify-center rounded-full bg-teal-50 text-teal-600">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/></svg>
+            </span>
+            <h4 class="mt-3 font-serif text-[1.05rem] font-semibold text-ink">Personalized Learning Pathways</h4>
+            <p class="mt-1.5 text-[0.85rem] leading-relaxed text-ink-soft">Recommends courses and support resources tailored to each student's academic pattern.</p>
+          </div>
+          <div class="reveal rounded-sm border border-plum-500/20 bg-plum-50/50 p-5">
+            <p class="font-mono text-[10px] uppercase tracking-[0.1em] text-plum-500">Built For</p>
+            <ul class="mt-2 space-y-1 text-[0.85rem] text-ink-soft">
+              <li><strong class="text-ink">Students</strong> — personalized guidance &amp; instant support</li>
+              <li><strong class="text-ink">Admins</strong> — resource scheduling &amp; enrollment analytics</li>
+              <li><strong class="text-ink">Faculty</strong> — automated admin, more time to teach</li>
+              <li><strong class="text-ink">Parents</strong> — real-time progress &amp; fee visibility</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- uploads -->
+    <section id="uploads" class="border-t border-paper-line bg-[#f6f0e4] px-5 py-14 sm:px-7">
+      <div class="mx-auto max-w-6xl">
+        <h3 class="font-serif text-xl font-semibold text-plum-500">Document Uploads — Automated Admissions</h3>
+        <p class="mt-1 text-[0.9rem] text-ink-faint">
+          Automated admissions intake using the
+          <span class="api-pill inline-block rounded-full px-2 py-0.5 font-mono text-[9.5px]">Drag &amp; Drop API</span>
+          and
+          <span class="api-pill inline-block rounded-full px-2 py-0.5 font-mono text-[9.5px]">File API</span>
+        </p>
+
+        <div id="dropzone" class="dropzone reveal mt-5 rounded-sm bg-[#fbf7ef] p-8 text-center text-ink-faint" tabindex="0" role="button" aria-label="Upload files by dragging them here or clicking to browse">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="mx-auto mb-2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          <p class="text-[0.9rem]">Drag &amp; drop a document here, or click to browse</p>
+          <p class="mt-1 font-mono text-[10px]">Files stay in your browser — nothing is uploaded to a server</p>
+          <input type="file" id="fileInput" multiple class="hidden" />
+        </div>
+
+        <div class="mt-4 grid gap-3" id="fileList"></div>
+      </div>
+    </section>
+
+    <!-- highlights -->
+    <section id="ai-insights" class="border-t border-paper-line px-5 py-10 sm:px-7">
+      <div class="mx-auto max-w-6xl">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h3 class="font-serif text-xl font-semibold text-plum-500">University Highlights</h3>
+            <p class="mt-1 text-[0.9rem] text-ink-faint">
+              Recognition and standing, plus predictive-retention alerts via
+              <span class="api-pill inline-block rounded-full px-2 py-0.5 font-mono text-[9.5px]">Web Notifications API</span>
+            </p>
+          </div>
+          <button id="notifyBtn" type="button" class="inline-flex items-center gap-1.5 rounded-sm bg-plum-500 px-3 py-1.5 font-mono text-[11px] text-white hover:bg-plum-600">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+            Enable Retention Alerts
+          </button>
+        </div>
+        <p class="status-note font-mono text-[11px] mt-2" id="notifyNote"></p>
+
+        <div class="mt-6 grid grid-cols-1 gap-5 md:grid-cols-3">
+          <div class="reveal relative overflow-hidden rounded-sm border border-teal-500/25 bg-teal-50/60 p-5">
+            <span class="absolute -right-4 -top-4 h-16 w-16 rounded-full bg-teal-500/10"></span>
+            <span class="insight-icon relative flex h-9 w-9 items-center justify-center rounded-full bg-teal-500 text-white">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 2 7l10 5 10-5-10-5Z"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            </span>
+            <h4 class="relative mt-3 font-serif text-[1.05rem] font-semibold text-teal-800">NAAC A+ Accredited</h4>
+            <p class="relative mt-1.5 text-[0.9rem] leading-relaxed text-ink-soft">Recognized nationally for institutional quality and academic standards.</p>
+          </div>
+          <div class="reveal relative overflow-hidden rounded-sm border border-teal-500/25 bg-teal-50/60 p-5">
+            <span class="absolute -right-4 -top-4 h-16 w-16 rounded-full bg-teal-500/10"></span>
+            <span class="insight-icon relative flex h-9 w-9 items-center justify-center rounded-full bg-teal-500 text-white">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/></svg>
+            </span>
+            <h4 class="relative mt-3 font-serif text-[1.05rem] font-semibold text-teal-800">339,053+ Library Holdings</h4>
+            <p class="relative mt-1.5 text-[0.9rem] leading-relaxed text-ink-soft">A well-stocked central library supporting research and coursework across all schools.</p>
+          </div>
+          <div class="reveal relative overflow-hidden rounded-sm border border-teal-500/25 bg-teal-50/60 p-5">
+            <span class="absolute -right-4 -top-4 h-16 w-16 rounded-full bg-teal-500/10"></span>
+            <span class="insight-icon relative flex h-9 w-9 items-center justify-center rounded-full bg-teal-500 text-white">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 2 7l10 5 10-5-10-5Z"/><path d="M22 7v6M6 9.5V15c0 1.66 2.69 3 6 3s6-1.34 6-3V9.5"/></svg>
+            </span>
+            <h4 class="relative mt-3 font-serif text-[1.05rem] font-semibold text-teal-800">Globally Ranked</h4>
+            <p class="relative mt-1.5 text-[0.9rem] leading-relaxed text-ink-soft">Featured in THE, QS, NIRF and WURI rankings among leading institutions.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- campus map -->
+    <section id="campus" class="border-t border-paper-line bg-[#f6f0e4] px-5 py-14 sm:px-7">
+      <div class="mx-auto max-w-6xl">
+        <h3 class="font-serif text-xl font-semibold text-plum-500">Find the Central Campus</h3>
+        <p class="mt-1 text-[0.9rem] text-ink-faint">
+          Distance calculated with the <span class="api-pill inline-block rounded-full px-2 py-0.5 font-mono text-[9.5px]">Geolocation API</span>
+        </p>
+
+        <div class="photo-band campus reveal mt-5">
+          <div class="bg-photo"></div>
+          <div class="overlay"></div>
+          <p class="caption font-mono text-[10px] uppercase tracking-[0.1em]">Central Campus &middot; Hosur Road, Bengaluru</p>
+        </div>
+
+        <div class="mt-5 grid grid-cols-1 gap-5 md:grid-cols-2">
+          <div class="paper-card reveal p-5">
+            <p class="text-[0.9rem] leading-relaxed text-ink-soft">
+              CHRIST (Deemed to be University) Central Campus, Hosur Road, Bengaluru.
+            </p>
+            <button id="locateBtn" type="button" class="mt-4 inline-flex items-center gap-1.5 rounded-sm bg-plum-500 px-3 py-1.5 font-mono text-[11px] text-white hover:bg-plum-600">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>
+              Locate Me
+            </button>
+            <p class="status-note font-mono text-[11px] mt-2" id="geoNote"></p>
+          </div>
+          <div class="paper-card reveal p-2">
+            <div class="map-card">
+              <div class="bg-photo" style="background-image:url('https://christuniversity.in/images/why-immg_1.jpg');"></div>
+              <div class="overlay"></div>
+              <div class="pin" aria-hidden="true">
+                <span class="pin-ring"></span>
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="#601D49" stroke="#FBF7EF" stroke-width="1.2"><path d="M12 21s7-7.58 7-12A7 7 0 0 0 5 9c0 4.42 7 12 7 12Z"/><circle cx="12" cy="9" r="2.4" fill="#FBF7EF" stroke="none"/></svg>
+              </div>
+              <div class="map-card-footer">
+                <span class="font-mono text-[10px] text-white/90">12.9346&deg; N, 77.6069&deg; E</span>
+                <div class="flex gap-2">
+                  <a href="https://www.google.com/maps/search/?api=1&query=12.9346,77.6069" target="_blank" rel="noopener" class="rounded-sm bg-white/95 px-2.5 py-1 font-mono text-[10px] text-plum-600 hover:bg-white">Google Maps ↗</a>
+                  <a href="https://www.openstreetmap.org/?mlat=12.9346&amp;mlon=77.6069#map=16/12.9346/77.6069" target="_blank" rel="noopener" class="rounded-sm bg-white/95 px-2.5 py-1 font-mono text-[10px] text-plum-600 hover:bg-white">OpenStreetMap ↗</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- contact form -->
+    <section id="contact" class="border-t border-paper-line px-5 py-14 sm:px-7">
+      <div class="mx-auto max-w-6xl">
+        <h3 class="font-serif text-xl font-semibold text-plum-500">Contact Us</h3>
+        <p class="mt-1 text-[0.9rem] text-ink-faint">
+          Help desk form — draft autosaved via <span class="api-pill inline-block rounded-full px-2 py-0.5 font-mono text-[9.5px]">Local Storage API</span>,
+          quick-copy via <span class="api-pill inline-block rounded-full px-2 py-0.5 font-mono text-[9.5px]">Clipboard API</span>
+        </p>
+
+        <div class="photo-band contact reveal mt-5">
+          <div class="bg-photo"></div>
+          <div class="overlay"></div>
+          <p class="caption font-mono text-[10px] uppercase tracking-[0.1em]">AI-Powered &middot; Human-Centered</p>
+        </div>
+
+        <div class="mt-5 grid grid-cols-1 gap-5 md:grid-cols-5">
+          <form id="contactForm" class="paper-card reveal p-5 md:col-span-3" novalidate>
+            <div class="grid gap-3">
+              <div>
+                <label for="cName" class="font-mono text-[10.5px] uppercase tracking-[0.08em] text-ink-faint">Name</label>
+                <input type="text" id="cName" name="name" placeholder="Your full name" required class="mt-1 w-full rounded-sm border border-paper-line bg-[#fbf7ef] px-3 py-2 font-mono text-[0.85rem]" />
+              </div>
+              <div>
+                <label for="cEmail" class="font-mono text-[10.5px] uppercase tracking-[0.08em] text-ink-faint">Email</label>
+                <input type="email" id="cEmail" name="email" placeholder="you@example.com" required class="mt-1 w-full rounded-sm border border-paper-line bg-[#fbf7ef] px-3 py-2 font-mono text-[0.85rem]" />
+              </div>
+              <div>
+                <label for="cMessage" class="font-mono text-[10.5px] uppercase tracking-[0.08em] text-ink-faint">Message</label>
+                <textarea id="cMessage" name="message" rows="4" placeholder="How can the ERP help desk assist?" required class="mt-1 w-full rounded-sm border border-paper-line bg-[#fbf7ef] px-3 py-2 font-mono text-[0.85rem]"></textarea>
+              </div>
+              <div class="flex flex-wrap items-center gap-3">
+                <button type="submit" class="rounded-sm bg-plum-500 px-3 py-1.5 font-mono text-[11px] text-white hover:bg-plum-600">Send Message</button>
+                <button type="button" id="clearDraftBtn" class="rounded-sm border border-plum-500/25 px-3 py-1.5 font-mono text-[11px] text-plum-500 hover:bg-plum-50">Clear Draft</button>
+              </div>
+              <p class="status-note font-mono text-[11px]" id="formNote"></p>
+            </div>
+          </form>
+
+          <div class="paper-card reveal p-5 md:col-span-2">
+            <p class="font-mono text-[10px] uppercase tracking-[0.1em] text-ink-faint">ERP Help Desk</p>
+
+            <div class="mt-3 flex items-center justify-between gap-2">
+              <span class="text-[0.8rem] break-all" id="contactEmailText">olivia.evangeline@msam.christuniversity.in</span>
+              <button type="button" class="shrink-0 rounded-sm border border-plum-500/25 px-2.5 py-1 font-mono text-[10px] text-plum-500 hover:bg-plum-50" data-copy="olivia.evangeline@msam.christuniversity.in" data-target="contactEmailText">Copy</button>
+            </div>
+            <p class="status-note font-mono text-[11px] mt-2" id="copyNote"></p>
+
+            <p class="mt-5 text-[0.8rem] leading-relaxed text-ink-soft">
+              Central Campus, Hosur Road, Bengaluru, Karnataka 560029.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="border-t border-paper-line bg-[#ece3d0]">
+    <div class="mx-auto max-w-6xl px-5 py-10 sm:px-8">
+      <div class="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
+        <div class="flex items-start gap-3">
+          <span class="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-plum-500/30 text-plum-500">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+          </span>
+          <div>
+            <p class="font-serif text-base font-semibold text-plum-500">Olivia&rsquo;s Full Stack Development Lab</p>
+            <p class="mt-0.5 font-mono text-[11px] uppercase tracking-[0.1em] text-ink-faint">Lab 02 — HTML5 APIs</p>
+            <p class="mt-1 text-[13px] text-ink-soft">Built with Tailwind CSS &amp; native HTML5 APIs</p>
+          </div>
+        </div>
+        <div class="flex flex-col items-start gap-2 sm:items-end">
+          <a href="/" class="font-mono text-[11px] uppercase tracking-[0.12em] text-plum-500 hover:text-plum-600">&larr; Back to Lab Journal</a>
+          <p class="font-mono text-[11px] text-ink-faint" id="copyrightYear">&copy; 2026 Olivia. All rights reserved.</p>
+          <p class="font-mono text-[10px] text-ink-faint">Campus photography &copy; CHRIST (Deemed to be University), via <a href="https://christuniversity.in" target="_blank" rel="noopener" class="underline hover:text-plum-500">christuniversity.in</a></p>
+        </div>
+      </div>
+      <div class="mt-8 border-t border-paper-line pt-4 text-center font-mono text-[10px] uppercase tracking-[0.14em] text-ink-faint" id="sessionFooter">
+        entry logged in the lab notebook
+      </div>
+    </div>
+  </footer>
+
+  <!-- chat widget -->
+  <button id="chatFab" type="button" class="chat-fab" aria-haspopup="dialog" aria-expanded="false" aria-controls="chatPanel" aria-label="Open UniAI assistant">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+  </button>
+  <div id="chatPanel" class="chat-panel" role="dialog" aria-label="UniAI assistant chat">
+    <div class="flex items-center justify-between border-b border-paper-line px-3.5 py-2.5">
+      <div>
+        <p class="font-serif text-[0.9rem] font-semibold text-plum-500">UniAI Assistant</p>
+        <p class="font-mono text-[9.5px] uppercase tracking-[0.08em] text-ink-faint">Ask me anything</p>
+      </div>
+      <button id="chatClose" type="button" class="text-ink-faint hover:text-plum-500" aria-label="Close assistant">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+    <div id="chatLog" class="chat-log"></div>
+    <div class="flex flex-wrap gap-1.5 border-t border-paper-line p-2.5" id="chatQuickReplies"></div>
+    <form id="chatForm" class="flex items-center gap-2 border-t border-paper-line p-2.5">
+      <input id="chatInput" type="text" placeholder="Ask about attendance, fees, schedule…" autocomplete="off" class="w-full rounded-sm border border-paper-line bg-[#fbf7ef] px-2.5 py-1.5 font-mono text-[0.8rem]" />
+      <button type="submit" class="shrink-0 rounded-sm bg-plum-500 px-2.5 py-1.5 text-white hover:bg-plum-600" aria-label="Send">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+      </button>
+    </form>
+  </div>
+
+  <script>
+    "use strict";
+
+    /* mobile nav toggle */
+    var toggle = document.getElementById("navToggle");
+    var panel = document.getElementById("mobileNav");
+    var iconMenu = document.getElementById("iconMenu");
+    var iconClose = document.getElementById("iconClose");
+    toggle.addEventListener("click", function () {
+      var isOpen = panel.getAttribute("data-open") === "true";
+      panel.setAttribute("data-open", String(!isOpen));
+      toggle.setAttribute("aria-expanded", String(!isOpen));
+      iconMenu.classList.toggle("hidden", !isOpen);
+      iconClose.classList.toggle("hidden", isOpen);
+    });
+    document.getElementById("copyrightYear").textContent =
+      "© " + new Date().getFullYear() + " Olivia. All rights reserved.";
+
+    // nav links scroll to section + update url
+    (function () {
+      var allNavLinks = document.querySelectorAll("#navLinks a, #mobileNavLinks a");
+      var baseTitle = document.title;
+
+      function setActive(id) {
+        allNavLinks.forEach(function (a) {
+          var match = a.getAttribute("href") === "#" + id;
+          if (match) {
+            a.classList.add("bg-plum-500", "text-white");
+            a.classList.remove("text-ink-soft", "text-plum-500");
+          } else {
+            a.classList.remove("bg-plum-500", "text-white");
+            a.classList.add("text-ink-soft");
+          }
+        });
+      }
+
+      function goToSection(id, sectionName, push) {
+        var target = document.getElementById(id);
+        if (!target) return;
+        target.scrollIntoView({ behavior: "smooth", block: "start" });
+        setActive(id);
+        document.title = sectionName ? sectionName + " · " + baseTitle : baseTitle;
+        if (push) history.pushState({ section: id }, "", "#" + id);
+        if (panel.getAttribute("data-open") === "true") {
+          panel.setAttribute("data-open", "false");
+          toggle.setAttribute("aria-expanded", "false");
+          iconMenu.classList.remove("hidden");
+          iconClose.classList.add("hidden");
+        }
+      }
+
+      allNavLinks.forEach(function (a) {
+        a.addEventListener("click", function (e) {
+          e.preventDefault();
+          goToSection(a.getAttribute("href").slice(1), a.dataset.section, true);
+        });
+      });
+
+      window.addEventListener("popstate", function (e) {
+        var id = (e.state && e.state.section) || location.hash.slice(1) || "dashboard";
+        goToSection(id, null, false);
+      });
+
+      if (location.hash) goToSection(location.hash.slice(1), null, false);
+    })();
+
+    /*scroll reveal*/
+    (function () {
+      var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) entry.target.classList.add("in-view");
+        });
+      }, { threshold: 0.2 });
+      document.querySelectorAll(".reveal").forEach(function (el) { observer.observe(el); });
+    })();
+
+    /*Session Storage API — sections explored*/
+    (function () {
+      var footer = document.getElementById("sessionFooter");
+      var sections = ["dashboard", "performance", "ai-capabilities", "uploads", "ai-insights", "campus", "contact"];
+      var seen;
+      try { seen = JSON.parse(sessionStorage.getItem("christ-erp-session-views") || "[]"); }
+      catch (e) { seen = []; }
+
+      function persist() {
+        try { sessionStorage.setItem("christ-erp-session-views", JSON.stringify(seen)); } catch (e) {}
+      }
+      function render() {
+        footer.textContent = seen.length + " / " + sections.length + " sections explored this session (Session Storage API) · entry logged in the lab notebook";
+      }
+      render();
+
+      var sectionObserver = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting && sections.indexOf(entry.target.id) !== -1 && seen.indexOf(entry.target.id) === -1) {
+            seen.push(entry.target.id);
+            persist();
+            render();
+          }
+        });
+      }, { threshold: 0.4 });
+      sections.forEach(function (id) {
+        var el = document.getElementById(id);
+        if (el) sectionObserver.observe(el);
+      });
+    })();
+
+    // draw the placement rate bar chart
+    var drawChart = (function () {
+      var canvas = document.getElementById("perfCanvas");
+      var ctx = canvas.getContext && canvas.getContext("2d");
+      var years = ["2021", "2022", "2023", "2024", "2025"];
+      var values = [91, 92, 93, 94, 95];
+      var colors = ["#601D49", "#218DAE", "#BD5579", "#1A7089", "#4C173A"];
+      var progress = 0, animating = false;
+
+      function resize() {
+        if (!ctx) return;
+        var dpr = window.devicePixelRatio || 1;
+        var rect = canvas.parentElement.getBoundingClientRect();
+        canvas.width = rect.width * dpr;
+        canvas.height = 260 * dpr;
+        canvas.style.width = rect.width + "px";
+        canvas.style.height = "260px";
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      }
+
+      function render() {
+        if (!ctx) return;
+        var w = canvas.clientWidth, h = 260;
+        var padding = { top: 20, right: 10, bottom: 30, left: 10 };
+        var chartW = w - padding.left - padding.right;
+        var chartH = h - padding.top - padding.bottom;
+        var barGap = 24;
+        var barW = (chartW - barGap * (values.length - 1)) / values.length;
+
+        ctx.clearRect(0, 0, w, h);
+        ctx.strokeStyle = "rgba(43,27,34,0.08)";
+        ctx.lineWidth = 1;
+        for (var g = 0; g <= 4; g++) {
+          var y = padding.top + (chartH / 4) * g;
+          ctx.beginPath();
+          ctx.moveTo(padding.left, y);
+          ctx.lineTo(w - padding.right, y);
+          ctx.stroke();
+        }
+
+        values.forEach(function (val, i) {
+          var animatedVal = val * progress;
+          var barH = (animatedVal / 100) * chartH;
+          var x = padding.left + i * (barW + barGap);
+          var y = padding.top + chartH - barH;
+
+          ctx.fillStyle = colors[i % colors.length];
+          ctx.beginPath();
+          if (ctx.roundRect) ctx.roundRect(x, y, barW, barH, 4);
+          else ctx.rect(x, y, barW, barH);
+          ctx.fill();
+
+          ctx.fillStyle = "#2B1B22";
+          ctx.font = "600 11px IBM Plex Mono, monospace";
+          ctx.textAlign = "center";
+          ctx.fillText(Math.round(animatedVal) + "%", x + barW / 2, y - 8);
+
+          ctx.fillStyle = "#5A4650";
+          ctx.font = "10px IBM Plex Mono, monospace";
+          ctx.fillText(years[i], x + barW / 2, h - 10);
+        });
+      }
+
+      function animate() {
+        if (animating) return;
+        animating = true;
+        progress = 0;
+        var start = null, duration = 900;
+        function step(ts) {
+          if (!start) start = ts;
+          progress = Math.min((ts - start) / duration, 1);
+          render();
+          if (progress < 1) requestAnimationFrame(step);
+          else animating = false;
+        }
+        requestAnimationFrame(step);
+      }
+
+      window.addEventListener("resize", function () { resize(); render(); });
+
+      return function trigger() { resize(); animate(); };
+    })();
+
+    (function () {
+      var chartWrapper = document.getElementById("chartWrapper");
+      var triggered = false;
+      var chartObserver = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting && !triggered) { triggered = true; drawChart(); }
+        });
+      }, { threshold: 0.3 });
+      chartObserver.observe(chartWrapper);
+    })();
+
+    /*Fullscreen API*/
+    (function () {
+      var chartWrapper = document.getElementById("chartWrapper");
+      var btn = document.getElementById("fullscreenBtn");
+      var note = document.getElementById("fullscreenNote");
+
+      if (!document.fullscreenEnabled && !document.webkitFullscreenEnabled) {
+        btn.disabled = true;
+        btn.classList.add("opacity-50", "cursor-not-allowed");
+        note.textContent = "Fullscreen API not supported in this browser.";
+        note.classList.add("err");
+        return;
+      }
+
+      btn.addEventListener("click", function () {
+        if (!document.fullscreenElement) {
+          (chartWrapper.requestFullscreen || chartWrapper.webkitRequestFullscreen).call(chartWrapper).catch(function (err) {
+            note.textContent = "Could not enter fullscreen: " + err.message;
+            note.classList.add("err");
+          });
+        } else {
+          (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+        }
+      });
+
+      document.addEventListener("fullscreenchange", function () {
+        var active = !!document.fullscreenElement;
+        btn.innerHTML = active
+          ? '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3v3a2 2 0 0 1-2 2H3M21 8h-3a2 2 0 0 1-2-2V3M3 16h3a2 2 0 0 1 2 2v3M16 21v-3a2 2 0 0 1 2-2h3"/></svg> Exit Fullscreen'
+          : '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3M21 8V5a2 2 0 0 0-2-2h-3M3 16v3a2 2 0 0 0 2 2h3M16 21h3a2 2 0 0 0 2-2v-3"/></svg> Fullscreen';
+        setTimeout(drawChart, 60);
+      });
+    })();
+
+    // drag & drop file upload
+    (function () {
+      var dropzone = document.getElementById("dropzone");
+      var fileInput = document.getElementById("fileInput");
+      var fileList = document.getElementById("fileList");
+
+      function formatSize(bytes) {
+        if (bytes < 1024) return bytes + " B";
+        if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + " KB";
+        return (bytes / (1024 * 1024)).toFixed(1) + " MB";
+      }
+
+      function renderFile(file) {
+        var row = document.createElement("div");
+        row.className = "flex items-center gap-3 rounded-sm border border-paper-line bg-[#fbf7ef] px-3 py-2";
+
+        if (file.type.indexOf("image/") === 0) {
+          var img = document.createElement("img");
+          img.className = "h-10 w-10 shrink-0 rounded-sm object-cover";
+          var reader = new FileReader();
+          reader.onload = function (e) { img.src = e.target.result; };
+          reader.readAsDataURL(file);
+          row.appendChild(img);
+        } else {
+          var iconWrap = document.createElement("span");
+          iconWrap.className = "flex h-10 w-10 shrink-0 items-center justify-center rounded-sm bg-teal-50 text-teal-600";
+          iconWrap.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>';
+          row.appendChild(iconWrap);
+        }
+
+        var meta = document.createElement("div");
+        meta.innerHTML =
+          '<p class="text-[0.85rem] font-semibold">' + file.name.replace(/</g, "&lt;") + '</p>' +
+          '<p class="font-mono text-[10px] text-ink-faint">' + formatSize(file.size) + " · " + (file.type || "unknown type") + "</p>";
+        row.appendChild(meta);
+        fileList.prepend(row);
+      }
+
+      function handleFiles(files) { Array.prototype.forEach.call(files, renderFile); }
+
+      dropzone.addEventListener("click", function () { fileInput.click(); });
+      dropzone.addEventListener("keydown", function (e) {
+        if (e.key === "Enter" || e.key === " ") { e.preventDefault(); fileInput.click(); }
+      });
+      fileInput.addEventListener("change", function () { handleFiles(fileInput.files); fileInput.value = ""; });
+
+      ["dragenter", "dragover"].forEach(function (evt) {
+        dropzone.addEventListener(evt, function (e) { e.preventDefault(); dropzone.classList.add("drag-over"); });
+      });
+      ["dragleave", "drop"].forEach(function (evt) {
+        dropzone.addEventListener(evt, function (e) { e.preventDefault(); dropzone.classList.remove("drag-over"); });
+      });
+      dropzone.addEventListener("drop", function (e) {
+        if (e.dataTransfer && e.dataTransfer.files.length) handleFiles(e.dataTransfer.files);
+      });
+    })();
+
+    // browser notifications
+    (function () {
+      var btn = document.getElementById("notifyBtn");
+      var note = document.getElementById("notifyNote");
+
+      if (!("Notification" in window)) {
+        btn.disabled = true;
+        btn.classList.add("opacity-50", "cursor-not-allowed");
+        note.textContent = "Notifications API not supported in this browser.";
+        note.classList.add("err");
+        return;
+      }
+
+      function reflectPermission() {
+        if (Notification.permission === "granted") {
+          note.textContent = "Alerts enabled — you'll see a sample notification now.";
+          note.classList.add("ok");
+          note.classList.remove("err");
+        } else if (Notification.permission === "denied") {
+          btn.disabled = true;
+          btn.classList.add("opacity-50", "cursor-not-allowed");
+          note.textContent = "Notifications are blocked for this site in your browser settings.";
+          note.classList.add("err");
+        }
+      }
+      reflectPermission();
+
+      btn.addEventListener("click", function () {
+        if (Notification.permission === "granted") { fireSample(); return; }
+        Notification.requestPermission().then(function (permission) {
+          reflectPermission();
+          if (permission === "granted") fireSample();
+        }).catch(function () {
+          note.textContent = "Could not request notification permission (secure context required).";
+          note.classList.add("err");
+        });
+      });
+
+      function fireSample() {
+        try {
+          new Notification("UniAI ERP — Predictive Alert", { body: "3 students in Data Structures show early signs of disengagement — recommend outreach this week." });
+        } catch (e) {
+          note.textContent = "Notification blocked: " + e.message;
+          note.classList.add("err");
+        }
+      }
+    })();
+
+    // locate me button
+    (function () {
+      var btn = document.getElementById("locateBtn");
+      var note = document.getElementById("geoNote");
+      var CAMPUS = { lat: 12.9346, lng: 77.6069 };
+
+      function toRad(deg) { return (deg * Math.PI) / 180; }
+      function haversineKm(lat1, lon1, lat2, lon2) {
+        var R = 6371;
+        var dLat = toRad(lat2 - lat1), dLon = toRad(lon2 - lon1);
+        var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+          Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+        var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        return R * c;
+      }
+
+      if (!("geolocation" in navigator)) {
+        btn.disabled = true;
+        btn.classList.add("opacity-50", "cursor-not-allowed");
+        note.textContent = "Geolocation API not supported in this browser.";
+        note.classList.add("err");
+        return;
+      }
+
+      btn.addEventListener("click", function () {
+        note.textContent = "Locating…";
+        note.classList.remove("err", "ok");
+        navigator.geolocation.getCurrentPosition(
+          function (pos) {
+            var dist = haversineKm(pos.coords.latitude, pos.coords.longitude, CAMPUS.lat, CAMPUS.lng);
+            note.textContent = "You're approximately " + dist.toFixed(1) + " km from the central campus (lat " +
+              pos.coords.latitude.toFixed(3) + ", lng " + pos.coords.longitude.toFixed(3) + ").";
+            note.classList.add("ok");
+          },
+          function (err) {
+            var messages = { 1: "Location permission denied.", 2: "Location unavailable right now.", 3: "Location request timed out." };
+            note.textContent = messages[err.code] || "Could not determine your location.";
+            note.classList.add("err");
+          },
+          { enableHighAccuracy: true, timeout: 8000 }
+        );
+      });
+    })();
+
+    // copy buttons
+    (function () {
+      var note = document.getElementById("copyNote");
+      document.querySelectorAll("[data-copy]").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          var text = btn.dataset.copy;
+          if (!navigator.clipboard) {
+            note.textContent = "Clipboard API unavailable — copy manually: " + text;
+            note.classList.add("err");
+            return;
+          }
+          navigator.clipboard.writeText(text).then(function () {
+            note.textContent = 'Copied "' + text + '" to clipboard.';
+            note.classList.remove("err");
+            note.classList.add("ok");
+            var original = btn.textContent;
+            btn.textContent = "Copied!";
+            setTimeout(function () { btn.textContent = original; }, 1500);
+          }).catch(function () {
+            note.textContent = "Could not copy automatically (secure context required).";
+            note.classList.add("err");
+          });
+        });
+      });
+    })();
+
+    // save contact form draft as you type
+    (function () {
+      var form = document.getElementById("contactForm");
+      var nameEl = document.getElementById("cName");
+      var emailEl = document.getElementById("cEmail");
+      var messageEl = document.getElementById("cMessage");
+      var clearBtn = document.getElementById("clearDraftBtn");
+      var note = document.getElementById("formNote");
+      var DRAFT_KEY = "christ-erp-contact-draft";
+
+      function loadDraft() {
+        try {
+          var draft = JSON.parse(localStorage.getItem(DRAFT_KEY) || "null");
+          if (draft) {
+            nameEl.value = draft.name || "";
+            emailEl.value = draft.email || "";
+            messageEl.value = draft.message || "";
+            note.textContent = "Draft restored from your last visit (Local Storage API).";
+          }
+        } catch (e) {}
+      }
+      function saveDraft() {
+        try {
+          localStorage.setItem(DRAFT_KEY, JSON.stringify({ name: nameEl.value, email: emailEl.value, message: messageEl.value }));
+        } catch (e) {}
+      }
+
+      [nameEl, emailEl, messageEl].forEach(function (el) { el.addEventListener("input", saveDraft); });
+
+      clearBtn.addEventListener("click", function () {
+        form.reset();
+        try { localStorage.removeItem(DRAFT_KEY); } catch (e) {}
+        note.textContent = "Draft cleared.";
+        note.classList.remove("err", "ok");
+      });
+
+      var HELPDESK_EMAIL = "olivia.evangeline@msam.christuniversity.in";
+
+      form.addEventListener("submit", function (e) {
+        e.preventDefault();
+        var name = nameEl.value.trim();
+        var email = emailEl.value.trim();
+        var message = messageEl.value.trim();
+
+        var subject = "UniAI ERP contact form — " + (name || "New message");
+        var body = "Name: " + name + "\nEmail: " + email + "\n\n" + message;
+        var mailtoUrl =
+          "mailto:" + HELPDESK_EMAIL +
+          "?subject=" + encodeURIComponent(subject) +
+          "&body=" + encodeURIComponent(body);
+
+        window.location.href = mailtoUrl;
+
+        try { localStorage.removeItem(DRAFT_KEY); } catch (e) {}
+        note.textContent = "Opening your email app to send this to " + HELPDESK_EMAIL + "…";
+        note.classList.add("ok");
+      });
+
+      loadDraft();
+    })();
+
+    // chatbot widget
+    (function () {
+      var fab = document.getElementById("chatFab");
+      var panel = document.getElementById("chatPanel");
+      var closeBtn = document.getElementById("chatClose");
+      var log = document.getElementById("chatLog");
+      var form = document.getElementById("chatForm");
+      var input = document.getElementById("chatInput");
+      var quickReplies = document.getElementById("chatQuickReplies");
+      var opened = false;
+
+      var QA = [
+        { keys: ["attendance"], reply: "Your attendance is at 88% this semester — above the 75% requirement. Keep it up!" },
+        { keys: ["fee", "fees", "payment"], reply: "Your next fee installment is due at the end of the month. Parents can view the full schedule under Fee Structure in the full ERP." },
+        { keys: ["schedule", "timetable", "class"], reply: "Your next class is Data Structures at 10:00 AM in Block 3, Room 214." },
+        { keys: ["scholarship", "financial aid"], reply: "Based on your academic record, you may qualify for the Merit Scholarship — an advisor will confirm eligibility." },
+        { keys: ["admission", "apply", "application"], reply: "Admission documents can be submitted in the Uploads section above — they're intake-checked automatically." },
+        { keys: ["retention", "at risk", "dropout"], reply: "The retention model flags students after 3 consecutive low-attendance weeks and notifies their advisor." },
+        { keys: ["hello", "hi", "hey"], reply: "Hi! I'm the UniAI Assistant. Ask me about attendance, fees, schedules or admissions." },
+      ];
+      var FALLBACK = "I don't have an answer for that yet — try asking about attendance, fees, schedule or admissions.";
+      var QUICK = ["Attendance", "Fees", "Schedule", "Admissions"];
+
+      function addBubble(text, who) {
+        var bubble = document.createElement("div");
+        bubble.className = "chat-bubble " + who;
+        bubble.textContent = text;
+        log.appendChild(bubble);
+        log.scrollTop = log.scrollHeight;
+      }
+
+      function renderQuickReplies() {
+        quickReplies.innerHTML = "";
+        QUICK.forEach(function (label) {
+          var btn = document.createElement("button");
+          btn.type = "button";
+          btn.textContent = label;
+          btn.className = "rounded-full border border-plum-500/25 px-2.5 py-1 font-mono text-[10px] text-plum-500 hover:bg-plum-50";
+          btn.addEventListener("click", function () { handleUserMessage(label); });
+          quickReplies.appendChild(btn);
+        });
+      }
+
+      function findReply(message) {
+        var lower = message.toLowerCase();
+        for (var i = 0; i < QA.length; i++) {
+          if (QA[i].keys.some(function (k) { return lower.indexOf(k) !== -1; })) return QA[i].reply;
+        }
+        return FALLBACK;
+      }
+
+      function handleUserMessage(message) {
+        if (!message.trim()) return;
+        addBubble(message, "user");
+
+        var typing = document.createElement("div");
+        typing.className = "chat-typing";
+        typing.innerHTML = "<span></span><span></span><span></span>";
+        log.appendChild(typing);
+        log.scrollTop = log.scrollHeight;
+
+        setTimeout(function () {
+          typing.remove();
+          addBubble(findReply(message), "bot");
+        }, 550 + Math.random() * 350);
+      }
+
+      function openPanel() {
+        opened = true;
+        panel.classList.add("open");
+        fab.setAttribute("aria-expanded", "true");
+        if (!log.childElementCount) {
+          addBubble("Hi! I'm the UniAI Assistant. Ask about attendance, fees, schedule or admissions.", "bot");
+        }
+        input.focus();
+      }
+      function closePanel() {
+        opened = false;
+        panel.classList.remove("open");
+        fab.setAttribute("aria-expanded", "false");
+      }
+
+      fab.addEventListener("click", function () { opened ? closePanel() : openPanel(); });
+      closeBtn.addEventListener("click", closePanel);
+      form.addEventListener("submit", function (e) {
+        e.preventDefault();
+        var message = input.value;
+        input.value = "";
+        handleUserMessage(message);
+      });
+
+      renderQuickReplies();
+    })();
+  </script>
+</body>
+</html>
