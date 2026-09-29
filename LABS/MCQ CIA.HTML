@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Unit 1 - HTML5 Revision</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f6f9;
+      margin: 0;
+      color: #222;
+    }
+    header {
+      background: #2c3e50;
+      color: #fff;
+      text-align: center;
+      padding: 20px;
+    }
+    header h1 {
+      margin: 0;
+    }
+    nav {
+      background: #34495e;
+      text-align: center;
+      padding: 10px;
+    }
+    nav a {
+      color: #fff;
+      margin: 0 8px;
+      text-decoration: none;
+      font-size: 14px;
+    }
+    nav a:hover {
+      text-decoration: underline;
+    }
+    .container {
+      display: flex;
+      gap: 20px;
+      max-width: 1100px;
+      margin: 20px auto;
+      padding: 0 16px;
+    }
+    main {
+      flex: 3;
+    }
+    aside {
+      flex: 1;
+      background: #fff;
+      padding: 16px;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      height: fit-content;
+    }
+    section {
+      background: #fff;
+      padding: 20px;
+      margin-bottom: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+    section h2 {
+      margin-top: 0;
+      color: #2980b9;
+    }
+    article {
+      border-left: 4px solid #2980b9;
+      padding-left: 12px;
+      margin: 10px 0;
+    }
+    pre {
+      background: #272822;
+      color: #f8f8f2;
+      padding: 12px;
+      border-radius: 6px;
+      overflow-x: auto;
+    }
+    button {
+      background: #2980b9;
+      color: #fff;
+      border: none;
+      padding: 8px 14px;
+      margin: 4px 4px 4px 0;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #1f6391;
+    }
+    input {
+      padding: 7px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    table {
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+    td {
+      border: 1px solid #ccc;
+      padding: 6px 12px;
+    }
+    .status {
+      margin-top: 10px;
+      font-style: italic;
+    }
+    video {
+      max-width: 100%;
+    }
+    canvas {
+      border: 1px solid #999;
+      max-width: 100%;
+    }
+    .drag-area {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    .box {
+      width: 200px;
+      min-height: 120px;
+      border: 2px dashed #2980b9;
+      border-radius: 8px;
+      padding: 10px;
+    }
+    .item {
+      background: #e67e22;
+      color: #fff;
+      padding: 8px;
+      margin: 5px 0;
+      border-radius: 5px;
+      cursor: move;
+    }
+    footer {
+      background: #2c3e50;
+      color: #fff;
+      text-align: center;
+      padding: 15px;
+    }
+    body.dark {
+      background: #1e1e1e;
+      color: #eee;
+    }
+    body.dark section,
+    body.dark aside {
+      background: #2d2d2d;
+    }
+    @media (max-width: 800px) {
+      .container {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ================= SEMANTIC: HEADER ================= -->
+  <header>
+    <h1>Unit 1 - HTML5 Revision</h1>
+    <p>HTML5 Elements, Web Storage and HTML5 APIs</p>
+  </header>
+
+  <!-- ================= SEMANTIC: NAV ================= -->
+  <nav>
+    <a href="#semantic">Semantic</a>
+    <a href="#audio">Audio</a>
+    <a href="#video">Video</a>
+    <a href="#storage">Web Storage</a>
+    <a href="#geo">Geolocation</a>
+    <a href="#canvas">Canvas</a>
+    <a href="#dragdrop">Drag &amp; Drop</a>
+    <a href="#worker">Web Workers</a>
+  </nav>
+
+  <div class="container">
+    <main>
+
+      <!-- ================= 1. SEMANTIC ELEMENTS ================= -->
+      <section id="semantic">
+        <h2>1. Semantic Elements</h2>
+        <p>This page itself is built using semantic elements:</p>
+        <article>
+          <table>
+            <tr><td>&lt;header&gt;</td><td>Header of webpage</td></tr>
+            <tr><td>&lt;nav&gt;</td><td>Navigation links</td></tr>
+            <tr><td>&lt;section&gt;</td><td>Groups related content</td></tr>
+            <tr><td>&lt;article&gt;</td><td>Independent content</td></tr>
+            <tr><td>&lt;aside&gt;</td><td>Sidebar information</td></tr>
+            <tr><td>&lt;footer&gt;</td><td>Footer information</td></tr>
+          </table>
+        </article>
+      </section>
+
+      <!-- ================= 2. AUDIO ================= -->
+      <section id="audio">
+        <h2>2. HTML5 Audio</h2>
+
+        <audio controls>
+          <source src="song.mp3" type="audio/mpeg">
+          <source src="https://www.w3schools.com/html/horse.mp3" type="audio/mpeg">
+          Your browser does not support the audio element.
+        </audio>
+
+        <pre>&lt;audio controls&gt;
+  &lt;source src="song.mp3"&gt;
+&lt;/audio&gt;</pre>
+
+        <p><strong>Attributes:</strong> controls, autoplay, loop, muted</p>
+        <p><strong>Applications:</strong> Music player, Podcasts, Voice assistant</p>
+      </section>
+
+      <!-- ================= 3. VIDEO ================= -->
+      <section id="video">
+        <h2>3. HTML5 Video</h2>
+
+        <video controls width="400">
+          <source src="movie.mp4" type="video/mp4">
+          <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
+          Your browser does not support the video element.
+        </video>
+
+        <pre>&lt;video controls width="400"&gt;
+  &lt;source src="movie.mp4"&gt;
+&lt;/video&gt;</pre>
+
+        <p><strong>Attributes:</strong> controls, autoplay, poster, loop</p>
+        <p><strong>Applications:</strong> E-learning, OTT, Video tutorials</p>
+      </section>
+
+      <!-- ================= 4. WEB STORAGE ================= -->
+      <section id="storage">
+        <h2>4. Web Storage</h2>
+
+        <article>
+          <h3>Local Storage (Permanent, across tabs) - e.g. Dark mode</h3>
+          <button onclick="toggleDarkMode()">Toggle Dark Mode</button>
+          <p class="status" id="localStatus"></p>
+        </article>
+
+        <article>
+          <h3>Session Storage (Until tab closes, same tab only) - e.g. Login</h3>
+          <input type="text" id="username" placeholder="Enter your name">
+          <button onclick="login()">Login</button>
+          <button onclick="logout()">Logout</button>
+          <p class="status" id="sessionStatus"></p>
+        </article>
+
+        <p><strong>Browser Cache:</strong> Stores webpage resources (images, CSS, JS), large memory capacity.</p>
+      </section>
+
+      <!-- ================= 5. GEOLOCATION ================= -->
+      <section id="geo">
+        <h2>5. Geolocation API - User Location</h2>
+
+        <p><strong>Applications:</strong> Food Delivery, Cab Booking, Tourism, Maps</p>
+        <p><strong>Functions:</strong></p>
+        <ol>
+          <li>getCurrentPosition()</li>
+          <li>watchPosition()</li>
+          <li>clearWatch()</li>
+        </ol>
+        <p><strong>Coordinates:</strong> latitude, longitude, timestamp, speed</p>
+
+        <button onclick="getLocation()">getCurrentPosition()</button>
+        <button onclick="startWatch()">watchPosition()</button>
+        <button onclick="stopWatch()">clearWatch()</button>
+
+        <table>
+          <tr><td>Latitude</td><td id="lat">-</td></tr>
+          <tr><td>Longitude</td><td id="lon">-</td></tr>
+          <tr><td>Timestamp</td><td id="time">-</td></tr>
+          <tr><td>Speed</td><td id="speed">-</td></tr>
+        </table>
+        <p class="status" id="geoStatus"></p>
+      </section>
+
+      <!-- ================= 6. CANVAS ================= -->
+      <section id="canvas">
+        <h2>6. Canvas API</h2>
+        <p>Canvas is used to draw graphics using JavaScript.</p>
+
+        <canvas id="myCanvas" width="400" height="200"></canvas>
+
+        <pre>&lt;canvas id="myCanvas"&gt;&lt;/canvas&gt;</pre>
+
+        <p><strong>Applications:</strong> Games, Charts, Drawing applications, Animations</p>
+      </section>
+
+      <!-- ================= 7. DRAG & DROP ================= -->
+      <section id="dragdrop">
+        <h2>7. Drag &amp; Drop API</h2>
+        <p>Drag the items from Box A to Box B.</p>
+
+        <div class="drag-area">
+          <div class="box" id="boxA" ondragover="allowDrop(event)" ondrop="drop(event)">
+            <strong>Box A</strong>
+            <div class="item" id="item1" draggable="true" ondragstart="drag(event)">HTML</div>
+            <div class="item" id="item2" draggable="true" ondragstart="drag(event)">CSS</div>
+            <div class="item" id="item3" draggable="true" ondragstart="drag(event)">JavaScript</div>
+          </div>
+          <div class="box" id="boxB" ondragover="allowDrop(event)" ondrop="drop(event)">
+            <strong>Box B</strong>
+          </div>
+        </div>
+
+        <ol>
+          <li><strong>dragstart</strong> - when dragging begins</li>
+          <li><strong>dragover</strong> - allows an element to be dropped</li>
+          <li><strong>drop</strong> - triggered when the element is dropped</li>
+        </ol>
+      </section>
+
+      <!-- ================= 8. WEB WORKERS ================= -->
+      <section id="worker">
+        <h2>8. Web Workers</h2>
+        <p>JavaScript feature that runs scripts in the background. Communicates through <strong>postMessage()</strong>.</p>
+
+        <input type="number" id="workerInput" value="100000000">
+        <button onclick="startWorker()">Sum 1 to N in Worker</button>
+        <button onclick="alert('Page is still responsive!')">Test Page Response</button>
+        <p class="status" id="workerStatus"></p>
+
+        <p><strong>Applications:</strong> Large data processing, Image and video processing</p>
+      </section>
+
+    </main>
+
+    <!-- ================= SEMANTIC: ASIDE ================= -->
+    <aside>
+      <h3>Quick Notes</h3>
+      <ul>
+        <li>Local Storage has no expiry.</li>
+        <li>Session Storage clears when the tab closes.</li>
+        <li>Geolocation needs user permission.</li>
+        <li>Canvas draws with JavaScript.</li>
+        <li>Web Workers can't access the DOM.</li>
+      </ul>
+    </aside>
+  </div>
+
+  <!-- ================= SEMANTIC: FOOTER ================= -->
+  <footer>
+    <p>&copy; 2026 Unit 1 Revision - Full Stack Development</p>
+  </footer>
+
+  <script>
+    // ================= WEB STORAGE =================
+
+    // Local Storage - Dark mode (remembered even after closing the browser)
+    function toggleDarkMode() {
+      document.body.classList.toggle("dark");
+      const isDark = document.body.classList.contains("dark");
+      localStorage.setItem("darkMode", isDark);
+      document.getElementById("localStatus").textContent =
+        "Saved in localStorage: darkMode = " + isDark;
+    }
+
+    if (localStorage.getItem("darkMode") === "true") {
+      document.body.classList.add("dark");
+    }
+
+    // Session Storage - Login (cleared when the tab closes)
+    function login() {
+      const name = document.getElementById("username").value.trim();
+      if (name === "") {
+        document.getElementById("sessionStatus").textContent = "Please enter a name.";
+        return;
+      }
+      sessionStorage.setItem("user", name);
+      showUser();
+    }
+
+    function logout() {
+      sessionStorage.removeItem("user");
+      showUser();
+    }
+
+    function showUser() {
+      const user = sessionStorage.getItem("user");
+      document.getElementById("sessionStatus").textContent =
+        user ? "Logged in as: " + user + " (stored in sessionStorage)" : "Not logged in.";
+    }
+
+    showUser();
+
+    // ================= GEOLOCATION =================
+    let watchId = null;
+    const geoStatus = document.getElementById("geoStatus");
+
+    function showPosition(position) {
+      document.getElementById("lat").textContent = position.coords.latitude;
+      document.getElementById("lon").textContent = position.coords.longitude;
+      document.getElementById("time").textContent = new Date(position.timestamp).toLocaleString();
+      document.getElementById("speed").textContent =
+        position.coords.speed !== null ? position.coords.speed + " m/s" : "Not available";
+    }
+
+    function showError(error) {
+      switch (error.code) {
+        case error.PERMISSION_DENIED:
+          geoStatus.textContent = "User denied the request for Geolocation.";
+          break;
+        case error.POSITION_UNAVAILABLE:
+          geoStatus.textContent = "Location information is unavailable.";
+          break;
+        case error.TIMEOUT:
+          geoStatus.textContent = "The request to get user location timed out.";
+          break;
+        default:
+          geoStatus.textContent = "An unknown error occurred.";
+      }
+    }
+
+    // 1. getCurrentPosition() - gets location once
+    function getLocation() {
+      if (!navigator.geolocation) {
+        geoStatus.textContent = "Geolocation is not supported by this browser.";
+        return;
+      }
+      geoStatus.textContent = "Getting current position...";
+      navigator.geolocation.getCurrentPosition(function (position) {
+        showPosition(position);
+        geoStatus.textContent = "Current position loaded.";
+      }, showError);
+    }
+
+    // 2. watchPosition() - keeps updating as the user moves
+    function startWatch() {
+      if (!navigator.geolocation) {
+        geoStatus.textContent = "Geolocation is not supported by this browser.";
+        return;
+      }
+      if (watchId !== null) {
+        geoStatus.textContent = "Already watching position.";
+        return;
+      }
+      watchId = navigator.geolocation.watchPosition(showPosition, showError);
+      geoStatus.textContent = "Watching position (ID: " + watchId + ")...";
+    }
+
+    // 3. clearWatch() - stops watching
+    function stopWatch() {
+      if (watchId !== null) {
+        navigator.geolocation.clearWatch(watchId);
+        watchId = null;
+        geoStatus.textContent = "Stopped watching position.";
+      } else {
+        geoStatus.textContent = "No active watch to clear.";
+      }
+    }
+
+    // ================= CANVAS =================
+    const canvas = document.getElementById("myCanvas");
+    const ctx = canvas.getContext("2d");
+
+    // Rectangle
+    ctx.fillStyle = "#2980b9";
+    ctx.fillRect(20, 20, 100, 80);
+
+    // Circle
+    ctx.beginPath();
+    ctx.arc(200, 60, 40, 0, 2 * Math.PI);
+    ctx.fillStyle = "#e67e22";
+    ctx.fill();
+
+    // Line
+    ctx.beginPath();
+    ctx.moveTo(270, 20);
+    ctx.lineTo(380, 100);
+    ctx.strokeStyle = "#27ae60";
+    ctx.lineWidth = 4;
+    ctx.stroke();
+
+    // Text
+    ctx.fillStyle = "#2c3e50";
+    ctx.font = "20px Arial";
+    ctx.fillText("Hello Canvas!", 20, 160);
+
+    // ================= DRAG & DROP =================
+
+    // 1. dragstart - save the id of the dragged element
+    function drag(event) {
+      event.dataTransfer.setData("text", event.target.id);
+    }
+
+    // 2. dragover - allow dropping (default is to block it)
+    function allowDrop(event) {
+      event.preventDefault();
+    }
+
+    // 3. drop - move the element into the box
+    function drop(event) {
+      event.preventDefault();
+      const id = event.dataTransfer.getData("text");
+      const box = event.target.closest(".box");
+      box.appendChild(document.getElementById(id));
+    }
+
+    // ================= WEB WORKERS =================
+    // Worker code is kept inline (as a Blob) so this page works as a single file.
+    const workerCode = `
+      onmessage = function (event) {
+        const n = event.data;
+        let sum = 0;
+        for (let i = 1; i <= n; i++) {
+          sum += i;
+        }
+        postMessage(sum);
+      };
+    `;
+
+    function startWorker() {
+      const n = Number(document.getElementById("workerInput").value);
+      const status = document.getElementById("workerStatus");
+
+      if (typeof Worker === "undefined") {
+        status.textContent = "Web Workers are not supported by this browser.";
+        return;
+      }
+
+      const blob = new Blob([workerCode], { type: "application/javascript" });
+      const worker = new Worker(URL.createObjectURL(blob));
+
+      status.textContent = "Worker is calculating in the background...";
+
+      // Send data to the worker
+      worker.postMessage(n);
+
+      // Receive result from the worker
+      worker.onmessage = function (event) {
+        status.textContent = "Sum of 1 to " + n + " = " + event.data;
+        worker.terminate();
+      };
+    }
+  </script>
+
+</body>
+</html>

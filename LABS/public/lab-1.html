@@ -1,10 +1,21 @@
-<html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Lab 01 — CHRIST University ERP | Olivia's Full Stack Development Lab</title>
 <meta name="description" content="Lab 1: Responsive webpage layout built with Tailwind CSS — a CHRIST (Deemed to be University) ERP Management System." />
+
+<!-- Apply saved/system theme before first paint to avoid a light-mode flash -->
+<script>
+  (function () {
+    try {
+      var stored = localStorage.getItem("christ-erp-theme");
+      var dark = stored ? stored === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+      if (dark) document.documentElement.classList.add("dark");
+    } catch (e) {}
+  })();
+</script>
 
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -32,7 +43,7 @@
         },
         boxShadow: {
           paper: "0 1px 2px rgba(43,27,34,0.06), 0 8px 24px -8px rgba(43,27,34,0.18)",
-          card: "0 1px 3px rgba(43,27,34,0.08), 0 10px 30px -12px rgba(96,29,73,0.25)",
+          card: "0 1px 3px rgba(43,27,34,0.08), 0 14px 34px -12px rgba(96,29,73,0.35)",
         },
       },
     },
@@ -40,41 +51,164 @@
 </script>
 
 <style>
+  :root { --ease: cubic-bezier(.22, 1, .36, 1); }
+
+  html { scroll-behavior: smooth; scroll-padding-top: 64px; }
+
   body {
     background-color: #f6f0e4;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
     font-family: "Source Serif 4", Georgia, serif;
   }
+
   .paper-card {
     background-color: #fbf7ef;
     border: 1px solid rgba(222, 210, 184, 0.8);
     box-shadow: 0 1px 2px rgba(43, 27, 34, 0.06), 0 8px 24px -8px rgba(43, 27, 34, 0.18);
     border-radius: 3px;
   }
-  #mobileNav {
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.3s ease;
+
+  /* ---------- Mobile nav ---------- */
+  #mobileNav { max-height: 0; overflow: hidden; transition: max-height 0.35s ease; }
+  #mobileNav[data-open="true"] { max-height: 26rem; }
+  .nav-link.is-active { background: #601d49; color: #fff; }
+
+  /* ---------- Scroll progress + back to top ---------- */
+  #progress {
+    position: fixed; inset: 0 0 auto 0; height: 3px; z-index: 60;
+    background: linear-gradient(90deg, #bd5579, #601d49, #218dae);
+    transform-origin: left; transform: scaleX(0);
   }
-  #mobileNav[data-open="true"] {
-    max-height: 20rem;
+  #toTop {
+    position: fixed; right: 1.25rem; bottom: 1.25rem; z-index: 50;
+    opacity: 0; pointer-events: none; transform: translateY(12px);
+    transition: opacity .3s, transform .3s var(--ease);
+  }
+  #toTop.show { opacity: 1; pointer-events: auto; transform: none; }
+
+  /* ---------- Scroll reveal ---------- */
+  .reveal { opacity: 0; transform: translateY(30px); transition: opacity .8s var(--ease) var(--d, 0s), transform .8s var(--ease) var(--d, 0s); }
+  .reveal.from-left  { transform: translateX(-46px); }
+  .reveal.from-right { transform: translateX(46px); }
+  .reveal.zoom       { transform: scale(.9); }
+  .reveal.in         { opacity: 1; transform: none; }
+
+  /* ---------- Hero ---------- */
+  .slide { position: absolute; inset: 0; opacity: 0; transition: opacity 1.4s ease; }
+  .slide.is-active { opacity: 1; }
+  .slide img { width: 100%; height: 100%; object-fit: cover; transform: scale(1.05); }
+  .slide.is-active img { animation: kenburns 9s ease-out forwards; }
+  @keyframes kenburns { from { transform: scale(1.05) translate3d(0,0,0); } to { transform: scale(1.2) translate3d(-1.5%, -1%, 0); } }
+
+  .orb { position: absolute; border-radius: 9999px; filter: blur(60px); opacity: .55; animation: drift 14s ease-in-out infinite; }
+  @keyframes drift { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(30px,-24px) scale(1.12); } }
+
+  .float { animation: float 7s ease-in-out infinite; }
+  @keyframes float { 0%,100% { transform: translateY(0) rotate(var(--r, 0deg)); } 50% { transform: translateY(-14px) rotate(var(--r, 0deg)); } }
+
+  .caret::after { content: ""; display: inline-block; width: 2px; height: 1.05em; margin-left: 3px; vertical-align: -0.15em; background: #9dd5e3; animation: blink 1s steps(1) infinite; }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  .wave { animation: wave 16s linear infinite; }
+  .wave.slow { animation-duration: 26s; animation-direction: reverse; }
+  @keyframes wave { to { transform: translateX(-50%); } }
+
+  .dot { width: 28px; height: 4px; border-radius: 4px; background: rgba(255,255,255,.35); overflow: hidden; position: relative; cursor: pointer; }
+  .dot::after { content: ""; position: absolute; inset: 0; background: #fff; transform: scaleX(0); transform-origin: left; }
+  .dot.is-active::after { animation: fillbar 6s linear forwards; }
+  @keyframes fillbar { to { transform: scaleX(1); } }
+
+  /* ---------- Buttons / shine ---------- */
+  .btn { position: relative; overflow: hidden; display: inline-flex; align-items: center; gap: .5rem; border-radius: 2px; padding: .75rem 1.25rem; font-family: "IBM Plex Mono", monospace; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; transition: transform .3s var(--ease), box-shadow .3s; }
+  .btn:hover { transform: translateY(-2px); }
+  .btn svg { transition: transform .3s var(--ease); }
+  .btn:hover svg { transform: translateX(4px); }
+  .shine { position: relative; overflow: hidden; }
+  .shine::after { content: ""; position: absolute; inset: 0; background: linear-gradient(110deg, transparent 30%, rgba(255,255,255,.5) 50%, transparent 70%); transform: translateX(-120%); transition: transform .9s var(--ease); pointer-events: none; }
+  .shine:hover::after { transform: translateX(120%); }
+
+  /* ---------- Cards ---------- */
+  .tilt { transition: transform .25s ease, box-shadow .3s; will-change: transform; }
+  .tilt:hover { box-shadow: 0 1px 3px rgba(43,27,34,.08), 0 22px 40px -14px rgba(96,29,73,.4); }
+
+  .photo { position: relative; overflow: hidden; background: linear-gradient(135deg, #8e4c77, #1a7089); }
+  .photo img { width: 100%; height: 100%; object-fit: cover; transition: transform 1.1s var(--ease); }
+  .group:hover .photo img, .photo:hover img { transform: scale(1.09); }
+
+  .school { position: relative; overflow: hidden; transition: transform .4s var(--ease), box-shadow .4s; }
+  .school::before { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: linear-gradient(90deg, #bd5579, #218dae); transform: scaleX(0); transition: transform .5s var(--ease); }
+  .school:hover { transform: translateY(-6px); box-shadow: 0 1px 3px rgba(43,27,34,.08), 0 18px 34px -12px rgba(96,29,73,.35); }
+  .school:hover::before { transform: scaleX(1); }
+  .school-ico { transition: transform .7s var(--ease), background-color .3s, color .3s; }
+  .school:hover .school-ico { transform: rotate(360deg) scale(1.08); background: #601d49; color: #fff; }
+
+  /* ---------- Marquee ---------- */
+  .marquee-track { display: flex; width: max-content; animation: marquee 34s linear infinite; }
+  .marquee:hover .marquee-track { animation-play-state: paused; }
+  @keyframes marquee { to { transform: translateX(-50%); } }
+
+  /* ---------- Bars & ring ---------- */
+  .bar-fill { width: 0; transition: width 1.6s var(--ease) var(--d, 0s); }
+  .reveal.in .bar-fill { width: var(--w); }
+  .ring-progress { stroke-dasharray: 339.3; stroke-dashoffset: 339.3; transition: stroke-dashoffset 2.2s var(--ease) .2s; }
+  .reveal.in .ring-progress { stroke-dashoffset: 17; }
+
+  /* ---------- Highlight icons ---------- */
+  .bob { animation: bob 3.6s ease-in-out infinite; }
+  @keyframes bob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+  .pulse-ring { position: relative; }
+  .pulse-ring::before { content: ""; position: absolute; inset: 0; border-radius: 9999px; background: #218dae; opacity: .45; animation: ping 2.4s cubic-bezier(0,0,.2,1) infinite; }
+  @keyframes ping { 75%, 100% { transform: scale(1.9); opacity: 0; } }
+
+  /* ---------- Rotating stamp ---------- */
+  .spin-slow { animation: spin 22s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ---------- Gallery + lightbox ---------- */
+  .g-item { position: relative; overflow: hidden; border-radius: 3px; cursor: zoom-in; background: linear-gradient(135deg, #8e4c77, #1a7089); }
+  .g-item img { width: 100%; height: 100%; object-fit: cover; transition: transform 1.1s var(--ease), filter .5s; }
+  .g-item:hover img { transform: scale(1.1); filter: saturate(1.15); }
+  .g-item figcaption { position: absolute; inset: auto 0 0 0; padding: 1.5rem .9rem .8rem; color: #fff; font-size: .85rem; background: linear-gradient(to top, rgba(39,11,29,.85), transparent); transform: translateY(100%); transition: transform .5s var(--ease); }
+  .g-item:hover figcaption, .g-item:focus-visible figcaption { transform: none; }
+  #lightbox { position: fixed; inset: 0; z-index: 80; display: flex; align-items: center; justify-content: center; background: rgba(39,11,29,.92); opacity: 0; pointer-events: none; transition: opacity .35s; padding: 1rem; }
+  #lightbox.open { opacity: 1; pointer-events: auto; }
+  #lightbox img { max-height: 82vh; max-width: min(92vw, 1100px); border-radius: 3px; transform: scale(.92); transition: transform .5s var(--ease); box-shadow: 0 30px 80px rgba(0,0,0,.5); }
+  #lightbox.open img { transform: scale(1); }
+
+  :focus-visible { outline: 2px solid #218dae; outline-offset: 3px; }
+
+  /* ---------- Accessibility: respect reduced motion ---------- */
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+    .reveal { opacity: 1; transform: none; }
+    .bar-fill { width: var(--w); }
+    .ring-progress { stroke-dashoffset: 17; }
   }
 </style>
+<noscript><style>.reveal { opacity: 1; transform: none; } .bar-fill { width: var(--w); } .ring-progress { stroke-dashoffset: 17; }</style></noscript>
 </head>
 
 <body class="text-ink antialiased">
 
-  <header class="bg-plum-500 text-paper-light">
+  <div id="progress" aria-hidden="true"></div>
+
+  <!-- ===================== HEADER ===================== -->
+  <header class="relative overflow-hidden bg-plum-500 text-paper-light">
+    <div class="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-teal-300/70 to-transparent"></div>
     <div class="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-5 py-4 sm:px-7">
       <div class="flex items-center gap-4">
         <span class="flex h-16 w-28 shrink-0 items-center justify-center rounded-sm bg-white px-2 py-1.5 shadow-paper sm:h-20 sm:w-36">
-          <img src="/christ-university-logo.png" alt="CHRIST (Deemed to be University) logo" class="h-full w-full object-contain" />
+          <img
+            src="/christ-university-logo.png"
+            alt="CHRIST (Deemed to be University) logo"
+            class="h-full w-full object-contain"
+            onerror="this.replaceWith(Object.assign(document.createElement('span'),{textContent:'CHRIST',className:'font-serif text-xl font-bold tracking-wide text-plum-500'}))"
+          />
         </span>
         <div>
           <p class="font-serif text-lg font-semibold leading-tight sm:text-xl">CHRIST (Deemed to be University)</p>
-          <p class="font-mono text-[10px] uppercase tracking-[0.12em] text-rose-200/90 sm:text-[11px]">
-            Empowering Minds, Inspiring Futures
-          </p>
+          <p class="font-mono text-[10px] uppercase tracking-[0.12em] text-rose-200/90 sm:text-[11px]">Empowering Minds, Inspiring Futures</p>
         </div>
       </div>
       <span class="rounded-full border border-teal-300/40 bg-teal-500/15 px-3 py-1 font-mono text-[10px] uppercase tracking-[0.1em] text-teal-200">
@@ -83,219 +217,433 @@
     </div>
   </header>
 
-  <nav class="relative border-b border-plum-700/20 bg-[#fbf7ef]">
+  <!-- ===================== NAV ===================== -->
+  <nav id="topNav" class="sticky top-0 z-40 border-b border-plum-700/20 bg-[#fbf7ef]/90 backdrop-blur transition-shadow">
     <div class="mx-auto flex max-w-6xl items-center justify-between px-5 py-2.5 sm:px-7">
       <button
-        id="navToggle"
-        type="button"
-        aria-expanded="false"
-        aria-controls="mobileNav"
-        class="flex items-center gap-2 rounded-sm border border-plum-500/20 px-3 py-1.5 font-mono text-[11px] uppercase tracking-[0.1em] text-plum-500 md:hidden"
+        id="navToggle" type="button" aria-expanded="false" aria-controls="mobileNav"
+        class="flex items-center gap-2 rounded-sm border border-plum-500/20 px-3 py-1.5 font-mono text-[11px] uppercase tracking-[0.1em] text-plum-500 lg:hidden"
       >
         <svg id="iconMenu" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
         <svg id="iconClose" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="hidden"><path stroke-linecap="round" d="M6 6l12 12M18 6L6 18"/></svg>
         Menu
       </button>
 
-      <ul class="hidden items-center gap-1 md:flex">
-        <li><a href="#dashboard" class="nav-link rounded-sm px-3 py-1.5 font-mono text-[11.5px] uppercase tracking-[0.06em] bg-plum-500 text-white">Dashboard</a></li>
-        <li><a href="#students" class="nav-link rounded-sm px-3 py-1.5 font-mono text-[11.5px] uppercase tracking-[0.06em] text-ink-soft hover:bg-plum-50 hover:text-plum-500">Students</a></li>
-        <li><a href="#faculty" class="nav-link rounded-sm px-3 py-1.5 font-mono text-[11.5px] uppercase tracking-[0.06em] text-ink-soft hover:bg-plum-50 hover:text-plum-500">Faculty</a></li>
-        <li><a href="#courses" class="nav-link rounded-sm px-3 py-1.5 font-mono text-[11.5px] uppercase tracking-[0.06em] text-ink-soft hover:bg-plum-50 hover:text-plum-500">Courses</a></li>
-        <li><a href="#performance" class="nav-link rounded-sm px-3 py-1.5 font-mono text-[11.5px] uppercase tracking-[0.06em] text-ink-soft hover:bg-plum-50 hover:text-plum-500">Academic Performance</a></li>
-        <li><a href="#ai-insights" class="nav-link rounded-sm px-3 py-1.5 font-mono text-[11.5px] uppercase tracking-[0.06em] text-ink-soft hover:bg-plum-50 hover:text-plum-500">Highlights</a></li>
+      <ul class="hidden items-center gap-1 lg:flex">
+        <li><a href="#dashboard" class="nav-link rounded-sm px-3 py-1.5 font-mono text-[11.5px] uppercase tracking-[0.06em] text-ink-soft transition hover:bg-plum-50 hover:text-plum-500">Dashboard</a></li>
+        <li><a href="#students" class="nav-link rounded-sm px-3 py-1.5 font-mono text-[11.5px] uppercase tracking-[0.06em] text-ink-soft transition hover:bg-plum-50 hover:text-plum-500">Students</a></li>
+        <li><a href="#faculty" class="nav-link rounded-sm px-3 py-1.5 font-mono text-[11.5px] uppercase tracking-[0.06em] text-ink-soft transition hover:bg-plum-50 hover:text-plum-500">Faculty</a></li>
+        <li><a href="#courses" class="nav-link rounded-sm px-3 py-1.5 font-mono text-[11.5px] uppercase tracking-[0.06em] text-ink-soft transition hover:bg-plum-50 hover:text-plum-500">Courses</a></li>
+        <li><a href="#performance" class="nav-link rounded-sm px-3 py-1.5 font-mono text-[11.5px] uppercase tracking-[0.06em] text-ink-soft transition hover:bg-plum-50 hover:text-plum-500">Academic Performance</a></li>
+        <li><a href="#ai-insights" class="nav-link rounded-sm px-3 py-1.5 font-mono text-[11.5px] uppercase tracking-[0.06em] text-ink-soft transition hover:bg-plum-50 hover:text-plum-500">Highlights</a></li>
+        <li><a href="#gallery" class="nav-link rounded-sm px-3 py-1.5 font-mono text-[11.5px] uppercase tracking-[0.06em] text-ink-soft transition hover:bg-plum-50 hover:text-plum-500">Campus Life</a></li>
       </ul>
 
       <span class="hidden font-mono text-[10px] uppercase tracking-[0.1em] text-ink-faint sm:inline">Student ERP Portal</span>
     </div>
 
-    <div id="mobileNav" data-open="false" class="border-t border-plum-500/10 bg-[#fbf7ef] md:hidden">
+    <div id="mobileNav" data-open="false" class="border-t border-plum-500/10 bg-[#fbf7ef] lg:hidden">
       <ul class="divide-y divide-paper-line px-5">
-        <li><a href="#dashboard" class="block py-2.5 font-mono text-[12px] uppercase tracking-[0.08em] text-plum-500">Dashboard</a></li>
-        <li><a href="#students" class="block py-2.5 font-mono text-[12px] uppercase tracking-[0.08em] text-ink-soft">Students</a></li>
-        <li><a href="#faculty" class="block py-2.5 font-mono text-[12px] uppercase tracking-[0.08em] text-ink-soft">Faculty</a></li>
-        <li><a href="#courses" class="block py-2.5 font-mono text-[12px] uppercase tracking-[0.08em] text-ink-soft">Courses</a></li>
-        <li><a href="#performance" class="block py-2.5 font-mono text-[12px] uppercase tracking-[0.08em] text-ink-soft">Academic Performance</a></li>
-        <li><a href="#ai-insights" class="block py-2.5 font-mono text-[12px] uppercase tracking-[0.08em] text-ink-soft">Highlights</a></li>
+        <li><a href="#dashboard" class="nav-m block py-2.5 font-mono text-[12px] uppercase tracking-[0.08em] text-plum-500">Dashboard</a></li>
+        <li><a href="#students" class="nav-m block py-2.5 font-mono text-[12px] uppercase tracking-[0.08em] text-ink-soft">Students</a></li>
+        <li><a href="#faculty" class="nav-m block py-2.5 font-mono text-[12px] uppercase tracking-[0.08em] text-ink-soft">Faculty</a></li>
+        <li><a href="#courses" class="nav-m block py-2.5 font-mono text-[12px] uppercase tracking-[0.08em] text-ink-soft">Courses</a></li>
+        <li><a href="#performance" class="nav-m block py-2.5 font-mono text-[12px] uppercase tracking-[0.08em] text-ink-soft">Academic Performance</a></li>
+        <li><a href="#ai-insights" class="nav-m block py-2.5 font-mono text-[12px] uppercase tracking-[0.08em] text-ink-soft">Highlights</a></li>
+        <li><a href="#gallery" class="nav-m block py-2.5 font-mono text-[12px] uppercase tracking-[0.08em] text-ink-soft">Campus Life</a></li>
       </ul>
     </div>
   </nav>
+
   <main class="bg-[#fbf7ef]">
 
-    <section id="dashboard" class="mx-auto max-w-6xl px-5 py-10 sm:px-7">
-      <h2 class="font-serif text-2xl font-semibold text-plum-500 sm:text-[1.75rem]">Welcome to CHRIST University ERP</h2>
-      <p class="mt-2 max-w-2xl text-ink-soft">
-        A management platform for CHRIST (Deemed to be University) — organizing academic information,
-        student records and campus insights across its schools and campuses.
-      </p>
+    <!-- ===================== DASHBOARD / HERO ===================== -->
+    <section id="dashboard" class="relative isolate overflow-hidden bg-plum-700 text-paper-light">
+      <!-- Crossfading photo slideshow -->
+      <div id="heroSlides" class="absolute inset-0" aria-hidden="true">
+        <div class="slide is-active"><img data-photo src="https://images.unsplash.com/photo-1562774053-701939374585?auto=format&fit=crop&w=1800&q=70" alt="" /></div>
+        <div class="slide"><img data-photo loading="lazy" src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=1800&q=70" alt="" /></div>
+        <div class="slide"><img data-photo loading="lazy" src="https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&w=1800&q=70" alt="" /></div>
+        <div class="slide"><img data-photo loading="lazy" src="https://images.unsplash.com/photo-1498243691581-b145c3f54a5a?auto=format&fit=crop&w=1800&q=70" alt="" /></div>
+      </div>
+      <div class="absolute inset-0 bg-gradient-to-br from-plum-800/90 via-plum-600/75 to-teal-800/60" aria-hidden="true"></div>
+      <span class="orb -left-20 top-10 h-72 w-72 bg-rose-500" aria-hidden="true" data-speed="0.12"></span>
+      <span class="orb -right-16 bottom-24 h-80 w-80 bg-teal-500" style="animation-delay:-5s" aria-hidden="true" data-speed="-0.1"></span>
 
-      <div class="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-
-        <div class="paper-card flex items-center gap-4 p-5">
-          <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-plum-500/20 text-plum-500">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      <div class="relative mx-auto grid max-w-6xl items-center gap-10 px-5 pb-40 pt-16 sm:px-7 sm:pt-24 lg:grid-cols-[1.15fr_.85fr]">
+        <div>
+          <span class="inline-flex items-center gap-2 rounded-full border border-teal-300/40 bg-teal-500/20 px-3 py-1 font-mono text-[10.5px] uppercase tracking-[0.1em] text-teal-100 backdrop-blur">
+            <span class="relative flex h-2 w-2"><span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-teal-300 opacity-75"></span><span class="relative inline-flex h-2 w-2 rounded-full bg-teal-300"></span></span>
+            NAAC A+ Accredited
           </span>
-          <div>
-            <p class="font-serif text-2xl font-semibold text-ink">38,000+</p>
-            <p class="font-mono text-[10.5px] uppercase tracking-[0.1em] text-ink-faint">Total Students</p>
+          <h1 class="mt-5 font-serif text-4xl font-semibold leading-[1.08] sm:text-6xl">Welcome to CHRIST University ERP</h1>
+          <p class="mt-4 min-h-[2rem] font-serif text-xl text-rose-100 sm:text-2xl">
+            One place for <span id="typed" class="caret text-teal-200"></span>
+          </p>
+          <p class="mt-4 max-w-xl text-[1.02rem] leading-relaxed text-paper-light/85">
+            A management platform for CHRIST (Deemed to be University) — organizing academic information,
+            student records and campus insights across its schools and campuses.
+          </p>
+          <div class="mt-8 flex flex-wrap gap-3">
+            <a href="#students" class="btn shine bg-paper-light text-plum-600 shadow-card">
+              Explore the dashboard
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </a>
+            <a href="#gallery" class="btn border border-white/40 text-white backdrop-blur hover:bg-white/10">See campus life</a>
+          </div>
+          <div id="heroDots" class="mt-10 flex gap-2" aria-label="Hero slideshow progress"></div>
+        </div>
+
+        <!-- Floating photo collage -->
+        <div class="relative hidden h-[26rem] lg:block" aria-hidden="true">
+          <div class="float absolute right-2 top-0 h-64 w-52 overflow-hidden rounded-sm border-[6px] border-paper-light shadow-card" style="--r:4deg">
+            <div class="photo h-full w-full"><img data-photo src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=600&q=70" alt="" /></div>
+          </div>
+          <div class="float absolute bottom-0 left-2 h-60 w-56 overflow-hidden rounded-sm border-[6px] border-paper-light shadow-card" style="--r:-5deg; animation-delay:-3s">
+            <div class="photo h-full w-full"><img data-photo src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=600&q=70" alt="" /></div>
+          </div>
+          <div class="float absolute right-0 top-56 rounded-sm bg-paper-light px-4 py-3 text-ink shadow-card" style="--r:2deg; animation-delay:-1.5s">
+            <p class="font-serif text-2xl font-semibold text-plum-500">520+</p>
+            <p class="font-mono text-[10px] uppercase tracking-[0.1em] text-ink-faint">international students</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Animated wave divider -->
+      <div class="pointer-events-none absolute inset-x-0 bottom-0 h-16 overflow-hidden sm:h-24" aria-hidden="true">
+        <svg class="wave slow absolute bottom-0 left-0 h-full w-[200%]" viewBox="0 0 2880 120" preserveAspectRatio="none">
+          <path fill="#FBF7EF" fill-opacity=".45" d="M0,40 C360,110 1080,-10 1440,40 L1440,120 L0,120Z"/>
+          <path fill="#FBF7EF" fill-opacity=".45" transform="translate(1440)" d="M0,40 C360,110 1080,-10 1440,40 L1440,120 L0,120Z"/>
+        </svg>
+        <svg class="wave absolute bottom-0 left-0 h-full w-[200%]" viewBox="0 0 2880 120" preserveAspectRatio="none">
+          <path fill="#FBF7EF" d="M0,70 C360,120 1080,20 1440,70 L1440,120 L0,120Z"/>
+          <path fill="#FBF7EF" transform="translate(1440)" d="M0,70 C360,120 1080,20 1440,70 L1440,120 L0,120Z"/>
+        </svg>
+      </div>
+    </section>
+
+    <!-- Stat strip (overlaps hero) -->
+    <section class="relative z-10 mx-auto -mt-24 max-w-6xl px-5 sm:px-7" aria-label="University at a glance">
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+
+        <div class="reveal" style="--d:0s">
+          <div class="paper-card tilt flex items-center gap-4 p-5">
+            <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-plum-500/20 text-plum-500">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            </span>
+            <div>
+              <p class="font-serif text-2xl font-semibold text-ink"><span data-count="38000" data-suffix="+">38,000+</span></p>
+              <p class="font-mono text-[10.5px] uppercase tracking-[0.1em] text-ink-faint">Total Students</p>
+            </div>
           </div>
         </div>
 
-        <div class="paper-card flex items-center gap-4 p-5">
-          <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-rose-500/20 text-rose-600">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5-10-5Z"/><path d="M6 12v5c0 1.66 2.69 3 6 3s6-1.34 6-3v-5"/></svg>
-          </span>
-          <div>
-            <p class="font-serif text-2xl font-semibold text-ink">10</p>
-            <p class="font-mono text-[10.5px] uppercase tracking-[0.1em] text-ink-faint">Schools</p>
+        <div class="reveal" style="--d:.1s">
+          <div class="paper-card tilt flex items-center gap-4 p-5">
+            <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-rose-500/20 text-rose-600">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5-10-5Z"/><path d="M6 12v5c0 1.66 2.69 3 6 3s6-1.34 6-3v-5"/></svg>
+            </span>
+            <div>
+              <p class="font-serif text-2xl font-semibold text-ink"><span data-count="10">10</span></p>
+              <p class="font-mono text-[10.5px] uppercase tracking-[0.1em] text-ink-faint">Schools</p>
+            </div>
           </div>
         </div>
 
-        <div class="paper-card flex items-center gap-4 p-5">
-          <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-teal-500/20 text-teal-600">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/></svg>
-          </span>
-          <div>
-            <p class="font-serif text-2xl font-semibold text-ink">250+</p>
-            <p class="font-mono text-[10.5px] uppercase tracking-[0.1em] text-ink-faint">Programmes Offered</p>
+        <div class="reveal" style="--d:.2s">
+          <div class="paper-card tilt flex items-center gap-4 p-5">
+            <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-teal-500/20 text-teal-600">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/></svg>
+            </span>
+            <div>
+              <p class="font-serif text-2xl font-semibold text-ink"><span data-count="250" data-suffix="+">250+</span></p>
+              <p class="font-mono text-[10.5px] uppercase tracking-[0.1em] text-ink-faint">Programmes Offered</p>
+            </div>
           </div>
         </div>
 
-        <div class="paper-card flex items-center gap-4 p-5">
-          <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-plum-500/20 text-plum-500">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10Z"/></svg>
-          </span>
-          <div>
-            <p class="font-serif text-2xl font-semibold text-ink">520+</p>
-            <p class="font-mono text-[10.5px] uppercase tracking-[0.1em] text-ink-faint">International Students</p>
+        <div class="reveal" style="--d:.3s">
+          <div class="paper-card tilt flex items-center gap-4 p-5">
+            <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-plum-500/20 text-plum-500">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10Z"/></svg>
+            </span>
+            <div>
+              <p class="font-serif text-2xl font-semibold text-ink"><span data-count="520" data-suffix="+">520+</span></p>
+              <p class="font-mono text-[10.5px] uppercase tracking-[0.1em] text-ink-faint">International Students</p>
+            </div>
           </div>
         </div>
       </div>
     </section>
 
-    <section id="students" class="border-t border-paper-line bg-[#f6f0e4] px-5 py-14 sm:px-7">
+    <!-- Scrolling ribbon -->
+    <div class="marquee mt-12 overflow-hidden border-y border-paper-line bg-plum-500 py-3 text-paper-light" aria-hidden="true">
+      <div class="marquee-track font-mono text-[12px] uppercase tracking-[0.14em]">
+        <div class="flex shrink-0 items-center gap-8 pr-8">
+          <span>NAAC A+ Accredited</span><span class="text-teal-300">✦</span>
+          <span>Excellence and Service</span><span class="text-rose-300">✦</span>
+          <span>THE · QS · NIRF · WURI</span><span class="text-teal-300">✦</span>
+          <span>95% Placement Rate</span><span class="text-rose-300">✦</span>
+          <span>38+ Countries</span><span class="text-teal-300">✦</span>
+          <span>90,000+ Alumni</span><span class="text-rose-300">✦</span>
+        </div>
+        <div class="flex shrink-0 items-center gap-8 pr-8">
+          <span>NAAC A+ Accredited</span><span class="text-teal-300">✦</span>
+          <span>Excellence and Service</span><span class="text-rose-300">✦</span>
+          <span>THE · QS · NIRF · WURI</span><span class="text-teal-300">✦</span>
+          <span>95% Placement Rate</span><span class="text-rose-300">✦</span>
+          <span>38+ Countries</span><span class="text-teal-300">✦</span>
+          <span>90,000+ Alumni</span><span class="text-rose-300">✦</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================== STUDENTS ===================== -->
+    <section id="students" class="bg-[#f6f0e4] px-5 py-16 sm:px-7">
       <div class="mx-auto max-w-6xl">
-        <div class="mb-6 flex items-center justify-between">
-          <h3 class="font-serif text-xl font-semibold text-plum-500">Students</h3>
+        <div class="reveal mb-8 flex items-center justify-between">
+          <h3 class="font-serif text-2xl font-semibold text-plum-500">Students</h3>
           <span class="rounded-full border border-ink-faint/30 px-2.5 py-0.5 font-mono text-[10px] uppercase tracking-[0.1em] text-ink-faint">Source: christuniversity.in</span>
         </div>
-        <div class="grid grid-cols-1 gap-5 sm:grid-cols-3">
-          <div class="paper-card p-5">
-            <p class="font-serif text-2xl font-semibold text-ink">38,000+</p>
-            <p class="mt-1 font-mono text-[10.5px] uppercase tracking-[0.1em] text-teal-600">Total Enrollment</p>
-            <p class="mt-2 text-[0.9rem] leading-relaxed text-ink-soft">Students enrolled across all undergraduate, postgraduate and doctoral programmes.</p>
+        <div class="grid grid-cols-1 gap-6 sm:grid-cols-3">
+
+          <div class="reveal" style="--d:0s">
+            <article class="paper-card tilt group overflow-hidden">
+              <div class="photo h-44"><img data-photo loading="lazy" src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=800&q=70" alt="Students studying together on campus" /></div>
+              <div class="p-5">
+                <p class="font-serif text-2xl font-semibold text-ink"><span data-count="38000" data-suffix="+">38,000+</span></p>
+                <p class="mt-1 font-mono text-[10.5px] uppercase tracking-[0.1em] text-teal-600">Total Enrollment</p>
+                <p class="mt-2 text-[0.9rem] leading-relaxed text-ink-soft">Students enrolled across all undergraduate, postgraduate and doctoral programmes.</p>
+              </div>
+            </article>
           </div>
-          <div class="paper-card p-5">
-            <p class="font-serif text-2xl font-semibold text-ink">520+</p>
-            <p class="mt-1 font-mono text-[10.5px] uppercase tracking-[0.1em] text-teal-600">International Students</p>
-            <p class="mt-2 text-[0.9rem] leading-relaxed text-ink-soft">Representing 38+ countries across the university's campuses.</p>
+
+          <div class="reveal" style="--d:.12s">
+            <article class="paper-card tilt group overflow-hidden">
+              <div class="photo h-44"><img data-photo loading="lazy" src="https://images.unsplash.com/photo-1529390079861-591de354faf5?auto=format&fit=crop&w=800&q=70" alt="A diverse group of international students" /></div>
+              <div class="p-5">
+                <p class="font-serif text-2xl font-semibold text-ink"><span data-count="520" data-suffix="+">520+</span></p>
+                <p class="mt-1 font-mono text-[10.5px] uppercase tracking-[0.1em] text-teal-600">International Students</p>
+                <p class="mt-2 text-[0.9rem] leading-relaxed text-ink-soft">Representing 38+ countries across the university's campuses.</p>
+              </div>
+            </article>
           </div>
-          <div class="paper-card p-5">
-            <p class="font-serif text-2xl font-semibold text-ink">90,000+</p>
-            <p class="mt-1 font-mono text-[10.5px] uppercase tracking-[0.1em] text-teal-600">Alumni Network</p>
-            <p class="mt-2 text-[0.9rem] leading-relaxed text-ink-soft">Graduates worldwide, with a 95% placement rate for recent cohorts.</p>
+
+          <div class="reveal" style="--d:.24s">
+            <article class="paper-card tilt group overflow-hidden">
+              <div class="photo h-44"><img data-photo loading="lazy" src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=800&q=70" alt="Graduates celebrating by throwing their caps" /></div>
+              <div class="p-5">
+                <p class="font-serif text-2xl font-semibold text-ink"><span data-count="90000" data-suffix="+">90,000+</span></p>
+                <p class="mt-1 font-mono text-[10.5px] uppercase tracking-[0.1em] text-teal-600">Alumni Network</p>
+                <p class="mt-2 text-[0.9rem] leading-relaxed text-ink-soft">Graduates worldwide, with a 95% placement rate for recent cohorts.</p>
+              </div>
+            </article>
           </div>
         </div>
       </div>
     </section>
 
-    <section id="faculty" class="border-t border-paper-line px-5 py-14 sm:px-7">
+    <!-- ===================== FACULTY / SCHOOLS ===================== -->
+    <section id="faculty" class="border-t border-paper-line px-5 py-16 sm:px-7">
       <div class="mx-auto max-w-6xl">
-        <h3 class="font-serif text-xl font-semibold text-plum-500">Faculties &amp; Schools</h3>
-        <p class="mt-1 text-[0.9rem] text-ink-faint">The 10 schools that make up CHRIST (Deemed to be University).</p>
-        <div class="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-5">
-          <div class="paper-card p-4 text-center text-[0.85rem] font-medium text-ink-soft">Business &amp; Management</div>
-          <div class="paper-card p-4 text-center text-[0.85rem] font-medium text-ink-soft">Commerce &amp; Finance</div>
-          <div class="paper-card p-4 text-center text-[0.85rem] font-medium text-ink-soft">Engineering &amp; Technology</div>
-          <div class="paper-card p-4 text-center text-[0.85rem] font-medium text-ink-soft">Sciences</div>
-          <div class="paper-card p-4 text-center text-[0.85rem] font-medium text-ink-soft">Social Sciences</div>
-          <div class="paper-card p-4 text-center text-[0.85rem] font-medium text-ink-soft">Law</div>
-          <div class="paper-card p-4 text-center text-[0.85rem] font-medium text-ink-soft">Education</div>
-          <div class="paper-card p-4 text-center text-[0.85rem] font-medium text-ink-soft">Architecture</div>
-          <div class="paper-card p-4 text-center text-[0.85rem] font-medium text-ink-soft">Humanities &amp; Performing Arts</div>
-          <div class="paper-card p-4 text-center text-[0.85rem] font-medium text-ink-soft">Psychological Sciences</div>
+        <div class="reveal">
+          <h3 class="font-serif text-2xl font-semibold text-plum-500">Faculties &amp; Schools</h3>
+          <p class="mt-1 text-[0.95rem] text-ink-faint">The 10 schools that make up CHRIST (Deemed to be University).</p>
+        </div>
+        <div class="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
+
+          <div class="reveal zoom" style="--d:0s"><div class="school paper-card p-5 text-center"><span class="school-ico mx-auto flex h-12 w-12 items-center justify-center rounded-full border border-plum-500/25 text-plum-500"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg></span><p class="mt-3 text-[0.88rem] font-medium text-ink-soft">Business &amp; Management</p></div></div>
+
+          <div class="reveal zoom" style="--d:.06s"><div class="school paper-card p-5 text-center"><span class="school-ico mx-auto flex h-12 w-12 items-center justify-center rounded-full border border-plum-500/25 text-plum-500"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 22h18M6 18v-7M10 18v-7M14 18v-7M18 18v-7M12 2 3 7h18l-9-5Z"/></svg></span><p class="mt-3 text-[0.88rem] font-medium text-ink-soft">Commerce &amp; Finance</p></div></div>
+
+          <div class="reveal zoom" style="--d:.12s"><div class="school paper-card p-5 text-center"><span class="school-ico mx-auto flex h-12 w-12 items-center justify-center rounded-full border border-plum-500/25 text-plum-500"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M9 1v3M15 1v3M9 20v3M15 20v3M20 9h3M20 14h3M1 9h3M1 14h3"/></svg></span><p class="mt-3 text-[0.88rem] font-medium text-ink-soft">Engineering &amp; Technology</p></div></div>
+
+          <div class="reveal zoom" style="--d:.18s"><div class="school paper-card p-5 text-center"><span class="school-ico mx-auto flex h-12 w-12 items-center justify-center rounded-full border border-plum-500/25 text-plum-500"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2v7.5L4.5 19a2 2 0 0 0 1.7 3h11.6a2 2 0 0 0 1.7-3L14 9.5V2M8.5 2h7M7 16h10"/></svg></span><p class="mt-3 text-[0.88rem] font-medium text-ink-soft">Sciences</p></div></div>
+
+          <div class="reveal zoom" style="--d:.24s"><div class="school paper-card p-5 text-center"><span class="school-ico mx-auto flex h-12 w-12 items-center justify-center rounded-full border border-plum-500/25 text-plum-500"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></span><p class="mt-3 text-[0.88rem] font-medium text-ink-soft">Social Sciences</p></div></div>
+
+          <div class="reveal zoom" style="--d:.3s"><div class="school paper-card p-5 text-center"><span class="school-ico mx-auto flex h-12 w-12 items-center justify-center rounded-full border border-plum-500/25 text-plum-500"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18M5 21h14M5 7h14M5 7l-3 8a4 4 0 0 0 6 0L5 7ZM19 7l-3 8a4 4 0 0 0 6 0l-3-8Z"/></svg></span><p class="mt-3 text-[0.88rem] font-medium text-ink-soft">Law</p></div></div>
+
+          <div class="reveal zoom" style="--d:.36s"><div class="school paper-card p-5 text-center"><span class="school-ico mx-auto flex h-12 w-12 items-center justify-center rounded-full border border-plum-500/25 text-plum-500"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2Z"/><path d="M22 4h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7Z"/></svg></span><p class="mt-3 text-[0.88rem] font-medium text-ink-soft">Education</p></div></div>
+
+          <div class="reveal zoom" style="--d:.42s"><div class="school paper-card p-5 text-center"><span class="school-ico mx-auto flex h-12 w-12 items-center justify-center rounded-full border border-plum-500/25 text-plum-500"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-6h6v6M9 10h.01M15 10h.01"/></svg></span><p class="mt-3 text-[0.88rem] font-medium text-ink-soft">Architecture</p></div></div>
+
+          <div class="reveal zoom" style="--d:.48s"><div class="school paper-card p-5 text-center"><span class="school-ico mx-auto flex h-12 w-12 items-center justify-center rounded-full border border-plum-500/25 text-plum-500"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></span><p class="mt-3 text-[0.88rem] font-medium text-ink-soft">Humanities &amp; Performing Arts</p></div></div>
+
+          <div class="reveal zoom" style="--d:.54s"><div class="school paper-card p-5 text-center"><span class="school-ico mx-auto flex h-12 w-12 items-center justify-center rounded-full border border-plum-500/25 text-plum-500"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2M9 9h.01M15 9h.01"/></svg></span><p class="mt-3 text-[0.88rem] font-medium text-ink-soft">Psychological Sciences</p></div></div>
         </div>
       </div>
     </section>
 
-    <section id="courses" class="border-t border-paper-line bg-[#f6f0e4] px-5 py-14 sm:px-7">
-      <div class="mx-auto max-w-6xl">
-        <h3 class="font-serif text-xl font-semibold text-plum-500">Courses &amp; Programmes</h3>
-        <p class="mt-1 text-[0.9rem] text-ink-faint">250+ programmes offered across four levels of study.</p>
-        <div class="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4">
-          <div class="paper-card p-5">
-            <p class="font-serif text-2xl font-semibold text-ink">92</p>
-            <p class="mt-1 font-mono text-[10.5px] uppercase tracking-[0.1em] text-ink-faint">Undergraduate</p>
-          </div>
-          <div class="paper-card p-5">
-            <p class="font-serif text-2xl font-semibold text-ink">77</p>
-            <p class="mt-1 font-mono text-[10.5px] uppercase tracking-[0.1em] text-ink-faint">Postgraduate</p>
-          </div>
-          <div class="paper-card p-5">
-            <p class="font-serif text-2xl font-semibold text-ink">36</p>
-            <p class="mt-1 font-mono text-[10.5px] uppercase tracking-[0.1em] text-ink-faint">Doctoral (PhD)</p>
-          </div>
-          <div class="paper-card p-5">
-            <p class="font-serif text-2xl font-semibold text-ink">9</p>
-            <p class="mt-1 font-mono text-[10.5px] uppercase tracking-[0.1em] text-ink-faint">Online Programmes</p>
+    <!-- ===================== COURSES ===================== -->
+    <section id="courses" class="border-t border-paper-line bg-[#f6f0e4] px-5 py-16 sm:px-7">
+      <div class="mx-auto grid max-w-6xl items-center gap-10 lg:grid-cols-2">
+
+        <div class="reveal from-left relative">
+          <div class="photo h-72 rounded-sm shadow-card sm:h-96"><img data-photo loading="lazy" src="https://images.unsplash.com/photo-1524178232363-1fb2b075b655?auto=format&fit=crop&w=1000&q=70" alt="A lecture hall with students" /></div>
+          <div class="float absolute -bottom-5 -right-2 rounded-sm bg-plum-500 px-5 py-4 text-paper-light shadow-card sm:-right-5" style="--r:-3deg">
+            <p class="font-serif text-3xl font-semibold"><span data-count="250" data-suffix="+">250+</span></p>
+            <p class="font-mono text-[10px] uppercase tracking-[0.1em] text-rose-200">programmes</p>
           </div>
         </div>
-      </div>
-    </section>
 
-    <section id="performance" class="border-t border-paper-line px-5 py-14 sm:px-7">
-      <div class="mx-auto max-w-6xl">
-        <h3 class="font-serif text-xl font-semibold text-plum-500">Academic Performance</h3>
-        <p class="mt-1 text-[0.9rem] text-ink-faint">Campus footprint and graduate outcomes.</p>
-        <div class="mt-6 grid grid-cols-1 gap-5 md:grid-cols-2">
-          <div class="paper-card p-5">
-            <p class="font-mono text-[10.5px] uppercase tracking-[0.1em] text-teal-600">Campuses</p>
-            <p class="mt-2 text-[0.95rem] leading-relaxed text-ink-soft">Six campuses across Bangalore (Central, Kengeri, Bannerghatta Road, Yeshwanthpur), Delhi NCR and Pune Lavasa.</p>
-          </div>
-          <div class="paper-card p-5">
-            <p class="font-mono text-[10.5px] uppercase tracking-[0.1em] text-teal-600">Placements &amp; Alumni</p>
-            <p class="mt-2 text-[0.95rem] leading-relaxed text-ink-soft">A 95% placement rate and an alumni network of 90,000+ graduates worldwide.</p>
-          </div>
-        </div>
-      </div>
-    </section>
+        <div class="reveal from-right">
+          <h3 class="font-serif text-2xl font-semibold text-plum-500">Courses &amp; Programmes</h3>
+          <p class="mt-1 text-[0.95rem] text-ink-faint">250+ programmes offered across four levels of study.</p>
 
-    <section id="ai-insights" class="border-t border-paper-line px-5 py-10 sm:px-7">
-      <div class="mx-auto max-w-6xl">
-        <h3 class="font-serif text-xl font-semibold text-plum-500">University Highlights</h3>
-        <p class="mt-1 text-[0.9rem] text-ink-faint">Recognition and standing of CHRIST (Deemed to be University).</p>
-        <div class="mt-6 grid grid-cols-1 gap-5 md:grid-cols-3">
-          <div class="relative overflow-hidden rounded-sm border border-teal-500/25 bg-teal-50/60 p-5">
-            <span class="absolute -right-4 -top-4 h-16 w-16 rounded-full bg-teal-500/10"></span>
-            <span class="relative flex h-9 w-9 items-center justify-center rounded-full bg-teal-500 text-white">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 2 7l10 5 10-5-10-5Z"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
-            </span>
-            <h4 class="relative mt-3 font-serif text-[1.05rem] font-semibold text-teal-800">NAAC A+ Accredited</h4>
-            <p class="relative mt-1.5 text-[0.9rem] leading-relaxed text-ink-soft">Recognized nationally for institutional quality and academic standards.</p>
-          </div>
-          <div class="relative overflow-hidden rounded-sm border border-teal-500/25 bg-teal-50/60 p-5">
-            <span class="absolute -right-4 -top-4 h-16 w-16 rounded-full bg-teal-500/10"></span>
-            <span class="relative flex h-9 w-9 items-center justify-center rounded-full bg-teal-500 text-white">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/></svg>
-            </span>
-            <h4 class="relative mt-3 font-serif text-[1.05rem] font-semibold text-teal-800">339,053+ Library Holdings</h4>
-            <p class="relative mt-1.5 text-[0.9rem] leading-relaxed text-ink-soft">A well-stocked central library supporting research and coursework across all schools.</p>
-          </div>
-          <div class="relative overflow-hidden rounded-sm border border-teal-500/25 bg-teal-50/60 p-5">
-            <span class="absolute -right-4 -top-4 h-16 w-16 rounded-full bg-teal-500/10"></span>
-            <span class="relative flex h-9 w-9 items-center justify-center rounded-full bg-teal-500 text-white">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 2 7l10 5 10-5-10-5Z"/><path d="M22 7v6M6 9.5V15c0 1.66 2.69 3 6 3s6-1.34 6-3V9.5"/></svg>
-            </span>
-            <h4 class="relative mt-3 font-serif text-[1.05rem] font-semibold text-teal-800">Globally Ranked</h4>
-            <p class="relative mt-1.5 text-[0.9rem] leading-relaxed text-ink-soft">Featured in THE, QS, NIRF and WURI rankings among leading institutions.</p>
+          <div class="mt-7 space-y-5">
+            <div>
+              <div class="flex items-baseline justify-between"><span class="font-mono text-[11px] uppercase tracking-[0.1em] text-ink-soft">Undergraduate</span><span class="font-serif text-xl font-semibold text-ink"><span data-count="92">92</span></span></div>
+              <div class="mt-1.5 h-2.5 overflow-hidden rounded-full bg-plum-100"><div class="bar-fill h-full rounded-full bg-gradient-to-r from-plum-500 to-rose-500" style="--w:100%"></div></div>
+            </div>
+            <div>
+              <div class="flex items-baseline justify-between"><span class="font-mono text-[11px] uppercase tracking-[0.1em] text-ink-soft">Postgraduate</span><span class="font-serif text-xl font-semibold text-ink"><span data-count="77">77</span></span></div>
+              <div class="mt-1.5 h-2.5 overflow-hidden rounded-full bg-plum-100"><div class="bar-fill h-full rounded-full bg-gradient-to-r from-plum-500 to-rose-500" style="--w:84%; --d:.15s"></div></div>
+            </div>
+            <div>
+              <div class="flex items-baseline justify-between"><span class="font-mono text-[11px] uppercase tracking-[0.1em] text-ink-soft">Doctoral (PhD)</span><span class="font-serif text-xl font-semibold text-ink"><span data-count="36">36</span></span></div>
+              <div class="mt-1.5 h-2.5 overflow-hidden rounded-full bg-teal-100"><div class="bar-fill h-full rounded-full bg-gradient-to-r from-teal-700 to-teal-300" style="--w:39%; --d:.3s"></div></div>
+            </div>
+            <div>
+              <div class="flex items-baseline justify-between"><span class="font-mono text-[11px] uppercase tracking-[0.1em] text-ink-soft">Online Programmes</span><span class="font-serif text-xl font-semibold text-ink"><span data-count="9">9</span></span></div>
+              <div class="mt-1.5 h-2.5 overflow-hidden rounded-full bg-teal-100"><div class="bar-fill h-full rounded-full bg-gradient-to-r from-teal-700 to-teal-300" style="--w:10%; --d:.45s"></div></div>
+            </div>
           </div>
         </div>
       </div>
     </section>
 
-    <section class="border-t border-paper-line bg-[#f6f0e4] px-5 py-10 sm:px-7">
+    <!-- ===================== ACADEMIC PERFORMANCE ===================== -->
+    <section id="performance" class="border-t border-paper-line px-5 py-16 sm:px-7">
       <div class="mx-auto max-w-6xl">
-        <article class="prose prose-neutral max-w-2xl prose-headings:font-serif prose-headings:text-plum-500 prose-a:text-teal-600">
+        <div class="reveal">
+          <h3 class="font-serif text-2xl font-semibold text-plum-500">Academic Performance</h3>
+          <p class="mt-1 text-[0.95rem] text-ink-faint">Campus footprint and graduate outcomes.</p>
+        </div>
+
+        <div class="mt-8 grid gap-6 lg:grid-cols-[1.3fr_.7fr]">
+          <div class="reveal from-left">
+            <div class="paper-card h-full p-6">
+              <p class="font-mono text-[10.5px] uppercase tracking-[0.1em] text-teal-600">Campuses</p>
+              <p class="mt-2 text-[0.95rem] leading-relaxed text-ink-soft">Six campuses across Bangalore (Central, Kengeri, Bannerghatta Road, Yeshwanthpur), Delhi NCR and Pune Lavasa.</p>
+              <ul class="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2">
+                <li class="shine flex items-center gap-3 rounded-sm border border-paper-line bg-white/60 px-3 py-2.5 transition hover:-translate-y-0.5 hover:border-plum-300"><span class="pulse-ring flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-teal-500 text-white"><svg class="relative" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg></span><span class="text-[0.92rem] text-ink">Central <span class="text-ink-faint">· Bangalore</span></span></li>
+                <li class="shine flex items-center gap-3 rounded-sm border border-paper-line bg-white/60 px-3 py-2.5 transition hover:-translate-y-0.5 hover:border-plum-300"><span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-plum-500 text-white"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg></span><span class="text-[0.92rem] text-ink">Kengeri <span class="text-ink-faint">· Bangalore</span></span></li>
+                <li class="shine flex items-center gap-3 rounded-sm border border-paper-line bg-white/60 px-3 py-2.5 transition hover:-translate-y-0.5 hover:border-plum-300"><span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-plum-500 text-white"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg></span><span class="text-[0.92rem] text-ink">Bannerghatta Road <span class="text-ink-faint">· Bangalore</span></span></li>
+                <li class="shine flex items-center gap-3 rounded-sm border border-paper-line bg-white/60 px-3 py-2.5 transition hover:-translate-y-0.5 hover:border-plum-300"><span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-plum-500 text-white"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg></span><span class="text-[0.92rem] text-ink">Yeshwanthpur <span class="text-ink-faint">· Bangalore</span></span></li>
+                <li class="shine flex items-center gap-3 rounded-sm border border-paper-line bg-white/60 px-3 py-2.5 transition hover:-translate-y-0.5 hover:border-plum-300"><span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-rose-500 text-white"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg></span><span class="text-[0.92rem] text-ink">Delhi NCR</span></li>
+                <li class="shine flex items-center gap-3 rounded-sm border border-paper-line bg-white/60 px-3 py-2.5 transition hover:-translate-y-0.5 hover:border-plum-300"><span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-rose-500 text-white"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg></span><span class="text-[0.92rem] text-ink">Pune Lavasa</span></li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="reveal from-right">
+            <div class="paper-card flex h-full flex-col items-center justify-center p-6 text-center">
+              <p class="font-mono text-[10.5px] uppercase tracking-[0.1em] text-teal-600">Placements &amp; Alumni</p>
+              <div class="relative mt-4 h-36 w-36">
+                <svg viewBox="0 0 120 120" class="h-full w-full -rotate-90">
+                  <circle cx="60" cy="60" r="54" fill="none" stroke="#EBDBE6" stroke-width="10"/>
+                  <circle class="ring-progress" cx="60" cy="60" r="54" fill="none" stroke="url(#ringGrad)" stroke-width="10" stroke-linecap="round"/>
+                  <defs><linearGradient id="ringGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#601D49"/><stop offset="1" stop-color="#218DAE"/></linearGradient></defs>
+                </svg>
+                <div class="absolute inset-0 flex flex-col items-center justify-center">
+                  <span class="font-serif text-3xl font-semibold text-ink"><span data-count="95" data-suffix="%">95%</span></span>
+                  <span class="font-mono text-[9.5px] uppercase tracking-[0.1em] text-ink-faint">placement</span>
+                </div>
+              </div>
+              <p class="mt-4 text-[0.95rem] leading-relaxed text-ink-soft">A 95% placement rate and an alumni network of <strong class="text-plum-500"><span data-count="90000" data-suffix="+">90,000+</span></strong> graduates worldwide.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== HIGHLIGHTS ===================== -->
+    <section id="ai-insights" class="border-t border-paper-line px-5 py-16 sm:px-7">
+      <div class="mx-auto max-w-6xl">
+        <div class="reveal">
+          <h3 class="font-serif text-2xl font-semibold text-plum-500">University Highlights</h3>
+          <p class="mt-1 text-[0.95rem] text-ink-faint">Recognition and standing of CHRIST (Deemed to be University).</p>
+        </div>
+        <div class="mt-8 grid grid-cols-1 gap-6 md:grid-cols-3">
+
+          <div class="reveal" style="--d:0s">
+            <div class="tilt shine relative h-full overflow-hidden rounded-sm border border-teal-500/25 bg-teal-50/60 p-6">
+              <span class="absolute -right-4 -top-4 h-20 w-20 rounded-full bg-teal-500/10"></span>
+              <span class="bob relative flex h-10 w-10 items-center justify-center rounded-full bg-teal-500 text-white">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 2 7l10 5 10-5-10-5Z"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+              </span>
+              <h4 class="relative mt-4 font-serif text-[1.1rem] font-semibold text-teal-800">NAAC A+ Accredited</h4>
+              <p class="relative mt-1.5 text-[0.92rem] leading-relaxed text-ink-soft">Recognized nationally for institutional quality and academic standards.</p>
+            </div>
+          </div>
+
+          <div class="reveal" style="--d:.12s">
+            <div class="tilt shine relative h-full overflow-hidden rounded-sm border border-teal-500/25 bg-teal-50/60 p-6">
+              <span class="absolute -right-4 -top-4 h-20 w-20 rounded-full bg-teal-500/10"></span>
+              <span class="bob relative flex h-10 w-10 items-center justify-center rounded-full bg-teal-500 text-white" style="animation-delay:-1.2s">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/></svg>
+              </span>
+              <h4 class="relative mt-4 font-serif text-[1.1rem] font-semibold text-teal-800"><span data-count="339053" data-suffix="+">339,053+</span> Library Holdings</h4>
+              <p class="relative mt-1.5 text-[0.92rem] leading-relaxed text-ink-soft">A well-stocked central library supporting research and coursework across all schools.</p>
+            </div>
+          </div>
+
+          <div class="reveal" style="--d:.24s">
+            <div class="tilt shine relative h-full overflow-hidden rounded-sm border border-teal-500/25 bg-teal-50/60 p-6">
+              <span class="absolute -right-4 -top-4 h-20 w-20 rounded-full bg-teal-500/10"></span>
+              <span class="bob relative flex h-10 w-10 items-center justify-center rounded-full bg-teal-500 text-white" style="animation-delay:-2.4s">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 2 7l10 5 10-5-10-5Z"/><path d="M22 7v6M6 9.5V15c0 1.66 2.69 3 6 3s6-1.34 6-3V9.5"/></svg>
+              </span>
+              <h4 class="relative mt-4 font-serif text-[1.1rem] font-semibold text-teal-800">Globally Ranked</h4>
+              <p class="relative mt-1.5 text-[0.92rem] leading-relaxed text-ink-soft">Featured in THE, QS, NIRF and WURI rankings among leading institutions.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== GALLERY ===================== -->
+    <section id="gallery" class="border-t border-paper-line bg-[#f6f0e4] px-5 py-16 sm:px-7">
+      <div class="mx-auto max-w-6xl">
+        <div class="reveal">
+          <h3 class="font-serif text-2xl font-semibold text-plum-500">Campus Life</h3>
+          <p class="mt-1 text-[0.95rem] text-ink-faint">Hover a photo for its caption, or click to view it full size.</p>
+        </div>
+
+        <div id="galleryGrid" class="mt-8 grid auto-rows-[150px] grid-cols-2 gap-3 md:auto-rows-[190px] md:grid-cols-4">
+          <figure class="g-item reveal zoom col-span-2 row-span-2" style="--d:0s" tabindex="0" role="button" aria-label="Open photo: Campus green">
+            <img data-photo loading="lazy" src="https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&w=1400&q=70" alt="University campus green with students" />
+            <figcaption>Campus green — where the day starts</figcaption>
+          </figure>
+          <figure class="g-item reveal zoom" style="--d:.08s" tabindex="0" role="button" aria-label="Open photo: Science labs">
+            <img data-photo loading="lazy" src="https://images.unsplash.com/photo-1532094349884-543bc11b234d?auto=format&fit=crop&w=800&q=70" alt="Science laboratory equipment" />
+            <figcaption>Science labs</figcaption>
+          </figure>
+          <figure class="g-item reveal zoom" style="--d:.16s" tabindex="0" role="button" aria-label="Open photo: Central library">
+            <img data-photo loading="lazy" src="https://images.unsplash.com/photo-1481627834876-b7833e8f5570?auto=format&fit=crop&w=800&q=70" alt="Library shelves full of books" />
+            <figcaption>Central library</figcaption>
+          </figure>
+          <figure class="g-item reveal zoom col-span-2" style="--d:.24s" tabindex="0" role="button" aria-label="Open photo: Lecture halls">
+            <img data-photo loading="lazy" src="https://images.unsplash.com/photo-1524178232363-1fb2b075b655?auto=format&fit=crop&w=1200&q=70" alt="Students in a lecture hall" />
+            <figcaption>Lecture halls</figcaption>
+          </figure>
+          <figure class="g-item reveal zoom col-span-2" style="--d:.08s" tabindex="0" role="button" aria-label="Open photo: Student community">
+            <img data-photo loading="lazy" src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=1200&q=70" alt="Students together outdoors" />
+            <figcaption>A community from 38+ countries</figcaption>
+          </figure>
+          <figure class="g-item reveal zoom col-span-2" style="--d:.16s" tabindex="0" role="button" aria-label="Open photo: Classrooms">
+            <img data-photo loading="lazy" src="https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=1200&q=70" alt="A classroom in session" />
+            <figcaption>Classrooms built for discussion</figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== ABOUT ===================== -->
+    <section class="border-t border-paper-line px-5 py-16 sm:px-7">
+      <div class="mx-auto grid max-w-6xl items-center gap-10 lg:grid-cols-[1fr_.8fr]">
+        <article class="reveal from-left prose prose-neutral max-w-2xl prose-headings:font-serif prose-headings:text-plum-500 prose-a:text-teal-600">
           <h2>About CHRIST (Deemed to be University)</h2>
           <p>
             CHRIST (Deemed to be University) is a NAAC A+ accredited institution with campuses across
@@ -304,11 +652,23 @@
             students from 38+ countries.
           </p>
         </article>
+
+        <div class="reveal from-right relative mx-auto w-full max-w-sm">
+          <div class="photo aspect-[4/5] rounded-sm shadow-card"><img data-photo loading="lazy" src="https://images.unsplash.com/photo-1562774053-701939374585?auto=format&fit=crop&w=900&q=70" alt="Historic university building" /></div>
+          <div class="absolute -bottom-8 -left-6 flex h-32 w-32 items-center justify-center rounded-full bg-paper-light shadow-card" aria-hidden="true">
+            <svg viewBox="0 0 200 200" class="spin-slow absolute inset-0 h-full w-full">
+              <defs><path id="circ" d="M100,100 m-72,0 a72,72 0 1,1 144,0 a72,72 0 1,1 -144,0"/></defs>
+              <text font-size="14" fill="#601D49" font-family="IBM Plex Mono, monospace" font-weight="500"><textPath href="#circ" textLength="440" lengthAdjust="spacing">EXCELLENCE AND SERVICE • EXCELLENCE AND SERVICE •</textPath></text>
+            </svg>
+            <span class="font-serif text-lg font-bold text-plum-500">CHRIST</span>
+          </div>
+        </div>
       </div>
     </section>
 
   </main>
 
+  <!-- ===================== FOOTER ===================== -->
   <footer class="border-t border-paper-line bg-[#ece3d0]">
     <div class="mx-auto max-w-6xl px-5 py-10 sm:px-8">
       <div class="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
@@ -333,20 +693,179 @@
     </div>
   </footer>
 
+  <!-- Back to top -->
+  <a id="toTop" href="#dashboard" aria-label="Back to top" class="flex h-11 w-11 items-center justify-center rounded-full bg-plum-500 text-white shadow-card transition hover:bg-plum-600">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+  </a>
+
+  <!-- Lightbox -->
+  <div id="lightbox" role="dialog" aria-modal="true" aria-label="Photo viewer">
+    <button id="lbClose" type="button" aria-label="Close" class="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+    <button id="lbPrev" type="button" aria-label="Previous photo" class="absolute left-3 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg>
+    </button>
+    <button id="lbNext" type="button" aria-label="Next photo" class="absolute right-3 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+    </button>
+    <figure class="flex flex-col items-center">
+      <img id="lbImg" src="" alt="" />
+      <figcaption id="lbCap" class="mt-3 font-mono text-[11px] uppercase tracking-[0.1em] text-paper-light/80"></figcaption>
+    </figure>
+  </div>
+
   <script>
-    var toggle = document.getElementById("navToggle");
-    var panel = document.getElementById("mobileNav");
-    var iconMenu = document.getElementById("iconMenu");
-    var iconClose = document.getElementById("iconClose");
-    toggle.addEventListener("click", function () {
-      var isOpen = panel.getAttribute("data-open") === "true";
-      panel.setAttribute("data-open", String(!isOpen));
-      toggle.setAttribute("aria-expanded", String(!isOpen));
-      iconMenu.classList.toggle("hidden", !isOpen ? true : false);
-      iconClose.classList.toggle("hidden", isOpen ? true : false);
+  (function () {
+    var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    var $ = function (s, r) { return (r || document).querySelector(s); };
+    var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
+
+    /* ---------- Mobile nav toggle ---------- */
+    var toggle = $("#navToggle"), panel = $("#mobileNav"), iconMenu = $("#iconMenu"), iconClose = $("#iconClose");
+    function setNav(open) {
+      panel.setAttribute("data-open", String(open));
+      toggle.setAttribute("aria-expanded", String(open));
+      iconMenu.classList.toggle("hidden", open);
+      iconClose.classList.toggle("hidden", !open);
+    }
+    toggle.addEventListener("click", function () { setNav(panel.getAttribute("data-open") !== "true"); });
+    $$(".nav-m").forEach(function (a) { a.addEventListener("click", function () { setNav(false); }); });
+
+    /* ---------- Footer year ---------- */
+    $("#copyrightYear").textContent = "© " + new Date().getFullYear() + " Olivia. All rights reserved.";
+
+    /* ---------- Photo fallback: hide broken images, gradient shows through ---------- */
+    $$("img[data-photo]").forEach(function (img) {
+      function bad() { img.style.visibility = "hidden"; }
+      img.addEventListener("error", bad);
+      if (img.complete && img.naturalWidth === 0 && img.getAttribute("src")) bad();
     });
-    document.getElementById("copyrightYear").textContent =
-      "© " + new Date().getFullYear() + " Olivia. All rights reserved.";
+
+    /* ---------- Count-up numbers ---------- */
+    function countUp(el) {
+      var end = +el.getAttribute("data-count"), suffix = el.getAttribute("data-suffix") || "";
+      if (reduce) { el.textContent = end.toLocaleString("en-US") + suffix; return; }
+      var dur = end > 1000 ? 2000 : 1400, t0 = null;
+      function step(t) {
+        if (!t0) t0 = t;
+        var p = Math.min((t - t0) / dur, 1), e = 1 - Math.pow(1 - p, 3);
+        el.textContent = Math.round(end * e).toLocaleString("en-US") + suffix;
+        if (p < 1) requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+    }
+
+    /* ---------- Reveal on scroll + counters ---------- */
+    if ("IntersectionObserver" in window) {
+      var revealIO = new IntersectionObserver(function (entries) {
+        entries.forEach(function (en) {
+          if (en.isIntersecting) { en.target.classList.add("in"); revealIO.unobserve(en.target); }
+        });
+      }, { threshold: 0.15, rootMargin: "0px 0px -6% 0px" });
+      $$(".reveal").forEach(function (el) { revealIO.observe(el); });
+
+      var countIO = new IntersectionObserver(function (entries) {
+        entries.forEach(function (en) {
+          if (en.isIntersecting) { countUp(en.target); countIO.unobserve(en.target); }
+        });
+      }, { threshold: 0.6 });
+      $$("[data-count]").forEach(function (el) { el.textContent = "0" + (el.getAttribute("data-suffix") || ""); countIO.observe(el); });
+    } else {
+      $$(".reveal").forEach(function (el) { el.classList.add("in"); });
+    }
+
+    /* ---------- Hero slideshow ---------- */
+    var slides = $$("#heroSlides .slide"), dotsBox = $("#heroDots"), current = 0, timer;
+    var dots = slides.map(function (_, i) {
+      var d = document.createElement("span");
+      d.className = "dot" + (i === 0 ? " is-active" : "");
+      d.addEventListener("click", function () { go(i); restart(); });
+      dotsBox.appendChild(d);
+      return d;
+    });
+    function go(i) {
+      slides[current].classList.remove("is-active"); dots[current].classList.remove("is-active");
+      current = (i + slides.length) % slides.length;
+      void dots[current].offsetWidth; // restart the progress animation
+      slides[current].classList.add("is-active"); dots[current].classList.add("is-active");
+    }
+    function restart() { clearInterval(timer); if (!reduce) timer = setInterval(function () { go(current + 1); }, 6000); }
+    restart();
+
+    /* ---------- Typewriter ---------- */
+    var typedEl = $("#typed");
+    var phrases = ["student records.", "academic insights.", "six campuses in three cities.", "programmes across 10 schools."];
+    if (reduce) { typedEl.textContent = phrases[0]; typedEl.classList.remove("caret"); }
+    else {
+      var pi = 0, ci = 0, deleting = false;
+      (function tick() {
+        var word = phrases[pi];
+        typedEl.textContent = word.slice(0, ci);
+        var delay = deleting ? 35 : 75;
+        if (!deleting && ci === word.length) { deleting = true; delay = 1600; }
+        else if (deleting && ci === 0) { deleting = false; pi = (pi + 1) % phrases.length; delay = 350; }
+        else { ci += deleting ? -1 : 1; }
+        setTimeout(tick, delay);
+      })();
+    }
+
+    /* ---------- 3D tilt on cards (mouse only) ---------- */
+    if (!reduce && window.matchMedia("(hover: hover)").matches) {
+      $$(".tilt").forEach(function (card) {
+        card.addEventListener("mousemove", function (e) {
+          var r = card.getBoundingClientRect();
+          var x = (e.clientX - r.left) / r.width - 0.5, y = (e.clientY - r.top) / r.height - 0.5;
+          card.style.transform = "perspective(800px) rotateX(" + (-y * 7) + "deg) rotateY(" + (x * 7) + "deg) translateY(-4px)";
+        });
+        card.addEventListener("mouseleave", function () { card.style.transform = ""; });
+      });
+    }
+
+    /* ---------- Scroll effects: progress bar, nav shadow, scrollspy, parallax, back-to-top ---------- */
+    var bar = $("#progress"), topNav = $("#topNav"), toTop = $("#toTop"), orbs = $$(".orb");
+    var links = $$(".nav-link"), ids = links.map(function (a) { return a.getAttribute("href").slice(1); });
+    var ticking = false;
+    function onScroll() {
+      var y = window.scrollY, max = document.documentElement.scrollHeight - window.innerHeight;
+      bar.style.transform = "scaleX(" + (max > 0 ? y / max : 0) + ")";
+      topNav.classList.toggle("shadow-paper", y > 60);
+      toTop.classList.toggle("show", y > 700);
+      if (!reduce && y < 1200) orbs.forEach(function (o) { o.style.translate = "0 " + (y * parseFloat(o.getAttribute("data-speed"))) + "px"; });
+      var active = 0;
+      ids.forEach(function (id, i) { var s = document.getElementById(id); if (s && s.getBoundingClientRect().top <= 140) active = i; });
+      links.forEach(function (a, i) { a.classList.toggle("is-active", i === active); });
+      ticking = false;
+    }
+    window.addEventListener("scroll", function () { if (!ticking) { ticking = true; requestAnimationFrame(onScroll); } }, { passive: true });
+    onScroll();
+
+    /* ---------- Lightbox ---------- */
+    var items = $$("#galleryGrid .g-item"), lb = $("#lightbox"), lbImg = $("#lbImg"), lbCap = $("#lbCap"), idx = 0;
+    function show(i) {
+      idx = (i + items.length) % items.length;
+      var img = $("img", items[idx]);
+      lbImg.src = img.src.replace(/w=\d+/, "w=1600");
+      lbImg.alt = img.alt;
+      lbCap.textContent = $("figcaption", items[idx]).textContent;
+    }
+    function openLb(i) { show(i); lb.classList.add("open"); document.body.style.overflow = "hidden"; $("#lbClose").focus(); }
+    function closeLb() { lb.classList.remove("open"); document.body.style.overflow = ""; }
+    items.forEach(function (it, i) {
+      it.addEventListener("click", function () { openLb(i); });
+      it.addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openLb(i); } });
+    });
+    $("#lbClose").addEventListener("click", closeLb);
+    $("#lbPrev").addEventListener("click", function () { show(idx - 1); });
+    $("#lbNext").addEventListener("click", function () { show(idx + 1); });
+    lb.addEventListener("click", function (e) { if (e.target === lb) closeLb(); });
+    document.addEventListener("keydown", function (e) {
+      if (!lb.classList.contains("open")) return;
+      if (e.key === "Escape") closeLb();
+      if (e.key === "ArrowLeft") show(idx - 1);
+      if (e.key === "ArrowRight") show(idx + 1);
+    });
+  })();
   </script>
 </body>
 </html>

@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HTML5 Audio, Video & Geolocation</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f6f9;
+      margin: 0;
+      padding: 20px;
+      color: #222;
+    }
+    h1 {
+      text-align: center;
+      color: #2c3e50;
+    }
+    .card {
+      background: #fff;
+      max-width: 800px;
+      margin: 20px auto;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+    .card h2 {
+      margin-top: 0;
+      color: #2980b9;
+    }
+    pre {
+      background: #272822;
+      color: #f8f8f2;
+      padding: 12px;
+      border-radius: 6px;
+      overflow-x: auto;
+    }
+    button {
+      background: #2980b9;
+      color: #fff;
+      border: none;
+      padding: 8px 14px;
+      margin: 4px 4px 4px 0;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #1f6391;
+    }
+    table {
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+    td {
+      border: 1px solid #ccc;
+      padding: 6px 12px;
+    }
+    #status {
+      margin-top: 10px;
+      font-style: italic;
+    }
+    video {
+      max-width: 100%;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>HTML5 Audio, Video &amp; Geolocation</h1>
+
+  <!-- ================= AUDIO ================= -->
+  <div class="card">
+    <h2>1. Audio</h2>
+
+    <audio controls>
+      <source src="song.mp3" type="audio/mpeg">
+      <source src="https://www.w3schools.com/html/horse.mp3" type="audio/mpeg">
+      Your browser does not support the audio element.
+    </audio>
+
+    <pre>&lt;audio controls&gt;
+  &lt;source src="song.mp3"&gt;
+&lt;/audio&gt;</pre>
+
+    <p><strong>Attributes:</strong> controls, autoplay, loop, muted</p>
+    <p><strong>Applications:</strong> Music player, Podcasts, Voice assistant</p>
+  </div>
+
+  <!-- ================= VIDEO ================= -->
+  <div class="card">
+    <h2>2. Video</h2>
+
+    <video controls width="400">
+      <source src="movie.mp4" type="video/mp4">
+      <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
+      Your browser does not support the video element.
+    </video>
+
+    <pre>&lt;video controls width="400"&gt;
+  &lt;source src="movie.mp4"&gt;
+&lt;/video&gt;</pre>
+
+    <p><strong>Attributes:</strong> controls, autoplay, poster, loop</p>
+    <p><strong>Applications:</strong> E-learning, OTT, Video tutorials</p>
+  </div>
+
+  <!-- ================= GEOLOCATION ================= -->
+  <div class="card">
+    <h2>3. Geolocation - User Location</h2>
+
+    <p><strong>Applications:</strong> Food Delivery, Cab Booking, Tourism, Maps</p>
+
+    <p><strong>Functions:</strong></p>
+    <ol>
+      <li>getCurrentPosition()</li>
+      <li>watchPosition()</li>
+      <li>clearWatch()</li>
+    </ol>
+
+    <p><strong>Coordinates:</strong> latitude, longitude, timestamp, speed</p>
+
+    <button onclick="getLocation()">getCurrentPosition()</button>
+    <button onclick="startWatch()">watchPosition()</button>
+    <button onclick="stopWatch()">clearWatch()</button>
+
+    <table>
+      <tr><td>Latitude</td><td id="lat">-</td></tr>
+      <tr><td>Longitude</td><td id="lon">-</td></tr>
+      <tr><td>Timestamp</td><td id="time">-</td></tr>
+      <tr><td>Speed</td><td id="speed">-</td></tr>
+    </table>
+
+    <p id="status"></p>
+  </div>
+
+  <script>
+    let watchId = null;
+    const status = document.getElementById("status");
+
+    function showPosition(position) {
+      document.getElementById("lat").textContent = position.coords.latitude;
+      document.getElementById("lon").textContent = position.coords.longitude;
+      document.getElementById("time").textContent = new Date(position.timestamp).toLocaleString();
+      document.getElementById("speed").textContent =
+        position.coords.speed !== null ? position.coords.speed + " m/s" : "Not available";
+    }
+
+    function showError(error) {
+      switch (error.code) {
+        case error.PERMISSION_DENIED:
+          status.textContent = "User denied the request for Geolocation.";
+          break;
+        case error.POSITION_UNAVAILABLE:
+          status.textContent = "Location information is unavailable.";
+          break;
+        case error.TIMEOUT:
+          status.textContent = "The request to get user location timed out.";
+          break;
+        default:
+          status.textContent = "An unknown error occurred.";
+      }
+    }
+
+    // 1. getCurrentPosition() - gets location once
+    function getLocation() {
+      if (!navigator.geolocation) {
+        status.textContent = "Geolocation is not supported by this browser.";
+        return;
+      }
+      status.textContent = "Getting current position...";
+      navigator.geolocation.getCurrentPosition(function (position) {
+        showPosition(position);
+        status.textContent = "Current position loaded.";
+      }, showError);
+    }
+
+    // 2. watchPosition() - keeps updating as the user moves
+    function startWatch() {
+      if (!navigator.geolocation) {
+        status.textContent = "Geolocation is not supported by this browser.";
+        return;
+      }
+      if (watchId !== null) {
+        status.textContent = "Already watching position.";
+        return;
+      }
+      watchId = navigator.geolocation.watchPosition(showPosition, showError);
+      status.textContent = "Watching position (ID: " + watchId + ")...";
+    }
+
+    // 3. clearWatch() - stops watching
+    function stopWatch() {
+      if (watchId !== null) {
+        navigator.geolocation.clearWatch(watchId);
+        watchId = null;
+        status.textContent = "Stopped watching position.";
+      } else {
+        status.textContent = "No active watch to clear.";
+      }
+    }
+  </script>
+
+</body>
+</html>

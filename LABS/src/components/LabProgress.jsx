@@ -1,4 +1,4 @@
-import { LayoutDashboard, Sparkles, ServerCog, BrainCircuit } from "lucide-react";
+import { LayoutDashboard, Sparkles, ServerCog, BrainCircuit, Zap } from "lucide-react";
 import LabCard from "./LabCard.jsx";
 import Divider from "./Divider.jsx";
 
@@ -21,9 +21,11 @@ const labs = [
   },
   {
     index: 3,
-    title: "Lab 3",
-    status: "In Progress",
-    icon: ServerCog,
+    title: "Lab 3 — JavaScript Events",
+    status: "Completed",
+    description: "Interactive event handling: scroll, mousemove, input, keydown, focus, blur, change, submit, drag/drop, contextmenu & resize.",
+    icon: Zap,
+    href: "/lab-3",
   },
   {
     index: 4,
