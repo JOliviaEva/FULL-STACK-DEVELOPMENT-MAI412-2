@@ -3,6 +3,8 @@ import Home from "./pages/Home.jsx";
 import Lab1 from "./pages/Lab1.jsx";
 import Lab2 from "./pages/Lab2.jsx";
 import Lab3 from "./pages/Lab3.jsx";
+import Lab56 from "./pages/Lab56.jsx";
+import AdmissionsApp from "./admissions/AdmissionsApp.jsx";
 
 export default function App() {
   return (
@@ -10,7 +12,10 @@ export default function App() {
       <Route path="/" element={<Home />} />
       <Route path="/lab-1" element={<Lab1 />} />
       <Route path="/lab-2" element={<Lab2 />} />
+      <Route path="/lab-3-4" element={<Lab3 />} />
       <Route path="/lab-3" element={<Lab3 />} />
+      <Route path="/lab-5-6" element={<Lab56 />} />
+      <Route path="/lab-5-6/app" element={<AdmissionsApp standalone />} />
     </Routes>
   );
 }

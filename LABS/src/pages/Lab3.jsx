@@ -15,14 +15,14 @@ export default function Lab3() {
             <ArrowLeft size={13} />
             Back to Lab Journal
           </Link>
-          <span className="stamp-label">Entry 03</span>
+          <span className="stamp-label">Entry 03 &amp; 04</span>
         </div>
       </div>
 
       {/* exercise brief */}
       <section className="mx-auto max-w-6xl px-5 py-12 sm:px-8 sm:py-16">
-        <p className="stamp-label mb-3">Lab Journal &middot; Entry 03</p>
-        <h1 className="font-serif text-3xl font-semibold text-plum-500 sm:text-4xl">LAB 03</h1>
+        <p className="stamp-label mb-3">Lab Journal &middot; Entry 03 &amp; 04</p>
+        <h1 className="font-serif text-3xl font-semibold text-plum-500 sm:text-4xl">LAB 03 &amp; 04</h1>
         <p className="mt-2 text-lg text-ink-soft">
           JavaScript Event Handling
         </p>
@@ -43,7 +43,7 @@ export default function Lab3() {
               <p className="stamp-label">Exercise Brief</p>
             </div>
             <p className="font-serif text-[1.05rem] font-semibold text-ink">
-              Exercise 3 — Demonstrate Event Handling using JavaScript
+              Exercises 3 &amp; 4 — Demonstrate Event Handling using JavaScript
             </p>
             <p className="mt-2 text-[0.95rem] leading-relaxed text-ink-soft">
               Enhance the existing webpage by integrating various JavaScript events relevant

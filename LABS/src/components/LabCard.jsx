@@ -6,7 +6,16 @@ const statusStyles = {
   "In Progress": "bg-rose-50 text-rose-700 border-rose-200",
 };
 
-export default function LabCard({ index, title, status, description, icon: Icon, href }) {
+export default function LabCard({
+  index,
+  entry = `0${index}`,
+  title,
+  status,
+  description,
+  icon: Icon,
+  href,
+  linkText = `View Lab ${index}`,
+}) {
   const isDone = status === "Completed";
 
   const CardInner = (
@@ -22,7 +31,7 @@ export default function LabCard({ index, title, status, description, icon: Icon,
       />
 
       <div className="flex items-start justify-between gap-3">
-        <span className="stamp-label">Entry 0{index}</span>
+        <span className="stamp-label">Entry {entry}</span>
         <span
           className={`rounded-full border px-2.5 py-0.5 font-mono text-[10px] uppercase tracking-[0.1em] ${statusStyles[status]}`}
         >
@@ -46,7 +55,7 @@ export default function LabCard({ index, title, status, description, icon: Icon,
       <div className="hairline mt-5 pt-4">
         {isDone ? (
           <span className="inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.12em] text-plum-500 transition-transform duration-200 group-hover:translate-x-1">
-            View Lab {index}
+            {linkText}
             <ArrowRight size={13} />
           </span>
         ) : (

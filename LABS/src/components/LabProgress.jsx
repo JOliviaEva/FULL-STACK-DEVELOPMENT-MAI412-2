@@ -1,4 +1,4 @@
-import { LayoutDashboard, Sparkles, ServerCog, BrainCircuit, Zap } from "lucide-react";
+import { LayoutDashboard, Sparkles, Zap, Atom } from "lucide-react";
 import LabCard from "./LabCard.jsx";
 import Divider from "./Divider.jsx";
 
@@ -21,17 +21,23 @@ const labs = [
   },
   {
     index: 3,
-    title: "Lab 3 — JavaScript Events",
+    entry: "03 & 04",
+    title: "Labs 3 & 4 — JavaScript Events",
     status: "Completed",
     description: "Interactive event handling: scroll, mousemove, input, keydown, focus, blur, change, submit, drag/drop, contextmenu & resize.",
     icon: Zap,
-    href: "/lab-3",
+    href: "/lab-3-4",
+    linkText: "View Labs 3 & 4",
   },
   {
-    index: 4,
-    title: "Lab 4",
-    status: "In Progress",
-    icon: BrainCircuit,
+    index: 5,
+    entry: "05 & 06",
+    title: "Labs 5 & 6 — React CRUD",
+    status: "Completed",
+    description: "UniAI Admissions Desk in React: reusable components, useState, form handling and full CRUD on JSON Server, with live search.",
+    icon: Atom,
+    href: "/lab-5-6",
+    linkText: "View Labs 5 & 6",
   },
 ];
 
@@ -44,14 +50,13 @@ export default function LabProgress() {
           Progress so far
         </h2>
         <p className="mt-3 text-ink-soft">
-          Four entries in the notebook &mdash; two built and running, two
-          waiting on the next page.
+          Four entries in the notebook &mdash; all built and running.
         </p>
       </div>
 
       <Divider className="mb-10" />
 
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
         {labs.map((lab) => (
           <LabCard key={lab.index} {...lab} />
         ))}

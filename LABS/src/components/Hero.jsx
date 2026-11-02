@@ -29,7 +29,7 @@ export default function Hero() {
               <ArrowDown size={14} className="transition-transform duration-200 group-hover:translate-y-0.5" />
             </a>
             <span className="font-mono text-[11px] uppercase tracking-[0.14em] text-ink-faint">
-              4 entries logged &middot; 2 complete
+              5 entries logged &middot; 4 complete
             </span>
           </div>
         </div>

@@ -23,14 +23,54 @@ npm run preview
 ## Routes
 
 - `/` — the lab journal home: hero cover, "Lab Journal — Progress So Far"
-  with 4 entries (only Lab 1 is implemented; Labs 2–4 are marked
-  **In Progress**).
+  with 4 entries: Lab 1, Lab 2, Labs 3 & 4 (combined) and Labs 5 & 6.
+- `/lab-3-4` — Labs 3 & 4, JavaScript event handling (`/lab-3` still works).
 - `/lab-1` — Exercise 1 brief plus the actual implementation. **The
   implementation itself is plain HTML & CSS**, not React: it lives at
   `public/lab-1.html`, served as a static file at `/lab-1.html`, built with
   Tailwind CSS via CDN (including the Typography plugin) and vanilla JS for
   the mobile menu toggle. The `/lab-1` journal page embeds it live in an
   `<iframe>` and also links to open it directly in a new tab.
+
+## Labs 5 & 6 — React CRUD (UniAI Admissions Desk)
+
+The Lab 3 Admissions Intake module rebuilt in React, with full CRUD backed
+by **JSON Server** (`db.json`).
+
+```bash
+npm run dev      # React app → http://localhost:5173/lab-5-6
+                 # also starts JSON Server → http://localhost:3001/applications
+```
+
+`npm run server` still starts JSON Server on its own; if it is already
+running, `npm run dev` reuses it.
+
+- `/lab-5-6` — journal entry with the app embedded inline.
+- `/lab-5-6/app` — the app full screen (use this for the demo/screenshots).
+- The app calls `/api/applications`; Vite proxies `/api` to port 3001
+  (`vite.config.js`). Set `VITE_API_URL` to use another backend.
+
+| Operation | UI | HTTP |
+| --- | --- | --- |
+| Create | "Add application" form | `POST /applications` |
+| Read | Applications table | `GET /applications` |
+| Update | Edit → "Save changes" | `PUT /applications/:id` |
+| Delete | Delete → confirm dialog | `DELETE /applications/:id` |
+| Search | Search box, status filter, sort | client-side, live |
+
+```
+db.json                      ← database (8 seed applications)
+src/admissions/
+  AdmissionsApp.jsx          container: state, search/filter/sort, CRUD handlers
+  useApplications.js         custom hook owning the list + CRUD calls
+  api.js                     fetch-based REST client for JSON Server
+  model.js                   options, validation rules, AI fit score, helpers
+  admissions.css             plain CSS (Lab 3 design tokens, dark/light, responsive)
+  components/                ApplicationForm, ApplicationTable, ApplicationRow,
+                             FormField, InputField, SelectField, TextAreaField,
+                             RadioGroup, SearchBar, Button, StatCard,
+                             StatusBadge, FitMeter, ConfirmDialog, Toast
+```
 
 ## Structure
 
