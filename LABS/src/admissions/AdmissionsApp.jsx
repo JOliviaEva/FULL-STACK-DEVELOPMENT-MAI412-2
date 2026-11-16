@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Database, Moon, RefreshCw, SearchX, Sun } from "lucide-react";
 import { useApplications } from "./useApplications.js";
+import { JSON_SERVER } from "./backends.js";
 import { STATUSES, SORT_OPTIONS, fitScore, matchesFilters, selectApplications } from "./model.js";
 import ApplicationForm from "./components/ApplicationForm.jsx";
 import ApplicationTable from "./components/ApplicationTable.jsx";
@@ -26,15 +27,9 @@ function readTheme() {
   return window.matchMedia?.("(prefers-color-scheme: light)").matches ? "light" : "dark";
 }
 
-const DB_PILL = {
-  loading: { label: "Connecting…", tone: "var(--amber)" },
-  ready: { label: "JSON Server · live", tone: "var(--green)" },
-  error: { label: "JSON Server offline", tone: "var(--red)" },
-};
-
-export default function AdmissionsApp({ standalone = false }) {
+export default function AdmissionsApp({ standalone = false, backend = JSON_SERVER }) {
   const { applications, status, error, reload, addApplication, updateApplication, removeApplication } =
-    useApplications();
+    useApplications(backend.api);
 
   const [theme, setTheme] = useState(readTheme);
   const [editingId, setEditingId] = useState(null);
@@ -124,7 +119,11 @@ export default function AdmissionsApp({ standalone = false }) {
     }
   }
 
-  const pill = DB_PILL[status];
+  const pill = {
+    loading: { label: "Connecting…", tone: "var(--amber)" },
+    ready: { label: backend.liveLabel, tone: "var(--green)" },
+    error: { label: backend.offlineLabel, tone: "var(--red)" },
+  }[status];
 
   return (
     <div className={`uai${standalone ? " uai--standalone" : ""}`} data-theme={theme}>
@@ -166,12 +165,12 @@ export default function AdmissionsApp({ standalone = false }) {
           </h1>
           <p className="uai-lede">
             Create, review, update and remove admission applications. Every change is written to{" "}
-            <code>db.json</code> through JSON Server and scored by the Lab 3 AI screening model.
+            <code>{backend.store}</code> through {backend.name} and scored by the Lab 3 AI screening model.
           </p>
         </section>
 
         <section className="uai-stats" aria-label="Summary">
-          <StatCard label="Applications" value={applications.length} note="records in db.json" />
+          <StatCard label="Applications" value={applications.length} note={`records in ${backend.store}`} />
           <StatCard label="Shortlisted" value={shortlisted} note="invited to interview" accent="var(--teal)" />
           <StatCard label="Admitted" value={admitted} note="offers released" accent="var(--green)" />
           <StatCard label="Avg. fit score" value={avgFit} note="AI screening model" accent="var(--rose)" />
@@ -226,7 +225,7 @@ export default function AdmissionsApp({ standalone = false }) {
             {status === "loading" && (
               <div className="uai-state" aria-busy="true">
                 <span className="uai-spinner" aria-hidden="true" />
-                Loading applications from JSON Server…
+                Loading applications from {backend.name}…
               </div>
             )}
 
@@ -235,9 +234,7 @@ export default function AdmissionsApp({ standalone = false }) {
                 <Database size={22} aria-hidden="true" />
                 <p className="uai-state-title">Couldn&rsquo;t reach the database</p>
                 <p>{error}</p>
-                <p>
-                  Start JSON Server in a second terminal with <code>npm run server</code>, then retry.
-                </p>
+                <p>{backend.startHint}</p>
                 <Button icon={RefreshCw} onClick={reload}>
                   Retry
                 </Button>
@@ -290,7 +287,7 @@ export default function AdmissionsApp({ standalone = false }) {
       >
         {pendingDelete && (
           <p>
-            <b>{pendingDelete.name}</b> ({pendingDelete.applicationNo}) will be removed from <code>db.json</code>. This
+            <b>{pendingDelete.name}</b> ({pendingDelete.applicationNo}) will be removed from <code>{backend.store}</code>. This
             can&rsquo;t be undone.
           </p>
         )}

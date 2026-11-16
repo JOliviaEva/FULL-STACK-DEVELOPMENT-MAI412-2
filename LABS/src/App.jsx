@@ -4,6 +4,8 @@ import Lab1 from "./pages/Lab1.jsx";
 import Lab2 from "./pages/Lab2.jsx";
 import Lab3 from "./pages/Lab3.jsx";
 import Lab56 from "./pages/Lab56.jsx";
+import Lab7 from "./pages/Lab7.jsx";
+import { MERN } from "./admissions/backends.js";
 import AdmissionsApp from "./admissions/AdmissionsApp.jsx";
 
 export default function App() {
@@ -16,6 +18,8 @@ export default function App() {
       <Route path="/lab-3" element={<Lab3 />} />
       <Route path="/lab-5-6" element={<Lab56 />} />
       <Route path="/lab-5-6/app" element={<AdmissionsApp standalone />} />
+      <Route path="/lab-7" element={<Lab7 />} />
+      <Route path="/lab-7/app" element={<AdmissionsApp standalone backend={MERN} />} />
     </Routes>
   );
 }

@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useState } from "react";
-import { applicationsApi } from "./api.js";
+import { JSON_SERVER } from "./backends.js";
 import { nextApplicationNo, toRecord } from "./model.js";
 
 // Custom hook that owns the applications list and every CRUD call.
 // Components get plain data and async functions; they never call fetch directly.
-export function useApplications() {
+export function useApplications(applicationsApi = JSON_SERVER.api) {
   const [applications, setApplications] = useState([]);
   const [status, setStatus] = useState("loading"); // "loading" | "ready" | "error"
   const [error, setError] = useState(null);
@@ -24,7 +24,7 @@ export function useApplications() {
           setStatus("error");
         }
       ),
-    []
+    [applicationsApi]
   );
 
   // READ: fetch every record once when the module mounts.

@@ -1,4 +1,4 @@
-import { LayoutDashboard, Sparkles, Zap, Atom } from "lucide-react";
+import { LayoutDashboard, Sparkles, Zap, Atom, Database } from "lucide-react";
 import LabCard from "./LabCard.jsx";
 import Divider from "./Divider.jsx";
 
@@ -38,6 +38,14 @@ const labs = [
     icon: Atom,
     href: "/lab-5-6",
     linkText: "View Labs 5 & 6",
+  },
+  {
+    index: 7,
+    title: "Lab 7 — MERN Stack",
+    status: "Completed",
+    description: "The Admissions Desk on a real backend: an Express.js REST API with Mongoose models storing applications in MongoDB, with full CRUD and search.",
+    icon: Database,
+    href: "/lab-7",
   },
 ];
 

@@ -4,6 +4,7 @@ import react from '@vitejs/plugin-react'
 import { defineConfig } from 'vite'
 
 const API_PORT = 3001
+const MERN_PORT = 5001
 
 // Labs 5 & 6: the React app calls /api/*, which is forwarded to JSON Server
 // on port 3001. Same-origin requests also work from a phone on the LAN when
@@ -13,6 +14,12 @@ const apiProxy = {
     target: `http://localhost:${API_PORT}`,
     changeOrigin: true,
     rewrite: (path) => path.replace(/^\/api/, ''),
+  },
+  // Lab 7: the same React app, backed by the Express + MongoDB server (npm run mern).
+  '/mern-api': {
+    target: `http://localhost:${MERN_PORT}`,
+    changeOrigin: true,
+    rewrite: (path) => path.replace(/^\/mern-api/, ''),
   },
 }
 
