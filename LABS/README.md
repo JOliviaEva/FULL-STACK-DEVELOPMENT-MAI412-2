@@ -72,6 +72,19 @@ src/admissions/
                              StatusBadge, FitMeter, ConfirmDialog, Toast
 ```
 
+## Lab 8 — Full Stack REST API (React + Express + SQLite)
+
+The Admissions module on a relational database with six linked tables (applications, programmes, campuses,
+programme_campuses, officers, notes): joins, foreign keys, query and path parameters, full CRUD and validation.
+
+```bash
+npm run sql:install   # once: install the Express server in lab-8/server
+npm run dev           # React :5173 + Express/SQLite API :5000 (started for you)
+```
+
+- `/lab-8` — journal entry (brief, schema, endpoints, live preview). `/lab-8/app` — the console.
+- Client code: `src/lab8/`. Server and full documentation: `lab-8/` (see `lab-8/README.md`).
+
 ## Structure
 
 ```

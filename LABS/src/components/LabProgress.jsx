@@ -1,4 +1,4 @@
-import { LayoutDashboard, Sparkles, Zap, Atom, Database } from "lucide-react";
+import { LayoutDashboard, Sparkles, Zap, Atom, Database, Network } from "lucide-react";
 import LabCard from "./LabCard.jsx";
 import Divider from "./Divider.jsx";
 
@@ -47,6 +47,14 @@ const labs = [
     icon: Database,
     href: "/lab-7",
   },
+  {
+    index: 8,
+    title: "Lab 8 — Full Stack REST API",
+    status: "Completed",
+    description: "A React console on an Express + SQLite REST API with six linked tables: joins, foreign keys, query and path parameters, full CRUD and validation.",
+    icon: Network,
+    href: "/lab-8",
+  },
 ];
 
 export default function LabProgress() {
@@ -58,7 +66,7 @@ export default function LabProgress() {
           Progress so far
         </h2>
         <p className="mt-3 text-ink-soft">
-          Four entries in the notebook &mdash; all built and running.
+          Six entries in the notebook &mdash; all built and running.
         </p>
       </div>
 
